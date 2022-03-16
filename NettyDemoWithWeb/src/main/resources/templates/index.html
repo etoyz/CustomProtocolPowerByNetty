@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+    <style>
+        #main {
+            position: absolute;
+            margin: auto;
+            width: 70%;
+            height: 80%;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+<div class="card" id="main">
+    <div class="card-header">
+        <h5 class="">模拟消防主机</h5>
+    </div>
+    <div class="card-body">
+        <form>
+            <div class="row align-items-end">
+                <div class="col-7">
+                    <select class="form-select" id="func-select" aria-label="功能选择">
+                        <option selected value="system">系统信息</option>
+                        <option value="fault">故障信息</option>
+                        <option value="partition">分区信息</option>
+                        <option value="detector">探测器信息</option>
+                        <option value="fire">灭火器信息</option>
+                    </select>
+                </div>
+                <div class="col-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" checked role="switch" id="read-success">
+                        <label class="form-check-label" for="read-success" id="read-ind">读取成功</label>
+                    </div>
+                </div>
+            </div>
+            <div class="dropdown-divider" style="margin-bottom: 20px"></div>
+            <div id="control-pannal">
+                <div id="system" class="sub_ctl">
+                    <div class="row align-items-end">
+                        <div class="col">
+                            <div class="form-check form-switch">
+                                <label class="form-check-label" for="alarm">总报警个数</label>
+                                <input class="input-group-sm" id="alarm">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-check form-switch">
+                                <label class="form-check-label" for="read-success">总故障个数</label>
+                                <input class="input-group-sm">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-check form-switch">
+                                <label class="form-check-label" for="read-success" id="read-ind">总探测器个数</label>
+                                <input class="input-group-sm">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="fault" class="sub_ctl">
+                    555
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">上传数据</button>
+        </form>
+    </div>
+</div>
+<script>
+    $("#read-success").change(function () {
+        if ($("#read-success").prop("checked"))
+            $("#read-ind").html("读取成功")
+        else
+            $("#read-ind").html("读取失败")
+    })
+
+    renderControlPanel()
+    $("#func-select").change(function () {
+        renderControlPanel()
+    })
+
+    function renderControlPanel() {
+        $(".sub_ctl").hide()
+        $("#" + $("#func-select").val()).show()
+    }
+</script>
+</body>
+</html>
