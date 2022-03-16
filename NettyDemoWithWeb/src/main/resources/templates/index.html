@@ -62,7 +62,7 @@
                         </div>
                         <div class="col">
                             <div class="form-check form-switch">
-                                <label class="form-check-label" for="read-success" id="read-ind">总探测器个数</label>
+                                <label class="form-check-label" for="read-success" id="-ind">总探测器个数</label>
                                 <input class="input-group-sm">
                             </div>
                         </div>
@@ -77,22 +77,34 @@
     </div>
 </div>
 <script>
-    $("#read-success").change(function () {
-        if ($("#read-success").prop("checked"))
-            $("#read-ind").html("读取成功")
-        else
-            $("#read-ind").html("读取失败")
-    })
+    $(document).ready(function () {
 
-    renderControlPanel()
-    $("#func-select").change(function () {
-        renderControlPanel()
-    })
 
-    function renderControlPanel() {
-        $(".sub_ctl").hide()
-        $("#" + $("#func-select").val()).show()
-    }
+
+        // render
+        {
+            function render() {
+                // ControlPanel
+                $(".sub_ctl").hide()
+                $("#" + $("#func-select").val()).show()
+
+                // read status label
+                if ($("#read-success").prop("checked"))
+                    $("#read-ind").html("读取成功")
+                else
+                    $("#read-ind").html("读取失败")
+            }
+
+            render()
+            $("#read-success").change(function () {
+                render()
+            })
+
+            $("#func-select").change(function () {
+                render()
+            })
+        }
+    });
 </script>
 </body>
 </html>
