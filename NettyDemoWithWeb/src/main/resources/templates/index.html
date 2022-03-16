@@ -26,7 +26,7 @@
         <h5 class="">模拟消防主机</h5>
     </div>
     <div class="card-body">
-        <form>
+        <form id="form">
             <div class="row align-items-end">
                 <div class="col-7">
                     <select class="form-select" id="func-select" aria-label="功能选择">
@@ -45,25 +45,25 @@
                 </div>
             </div>
             <div class="dropdown-divider" style="margin-bottom: 20px"></div>
-            <div id="control-pannal">
+            <div id="control-panel">
                 <div id="system" class="sub_ctl">
                     <div class="row align-items-end">
                         <div class="col">
                             <div class="form-check form-switch">
-                                <label class="form-check-label" for="alarm">总报警个数</label>
-                                <input class="input-group-sm" id="alarm">
+                                <label class="form-check-label">总报警个数</label>
+                                <input class="input-group-sm" name="alarm">
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-check form-switch">
-                                <label class="form-check-label" for="read-success">总故障个数</label>
-                                <input class="input-group-sm">
+                                <label class="form-check-label">总故障个数</label>
+                                <input class="input-group-sm" name="fault">
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-check form-switch">
-                                <label class="form-check-label" for="read-success" id="-ind">总探测器个数</label>
-                                <input class="input-group-sm">
+                                <label class="form-check-label">总探测器个数</label>
+                                <input class="input-group-sm" name="detector">
                             </div>
                         </div>
                     </div>
@@ -81,13 +81,24 @@
                     灭火器信息
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary" style="position: absolute;left: 0;right: 0;margin: auto;bottom: 20px">上传数据</button>
+            <button type="submit" id="submit" class="btn btn-primary"
+                    style="position: absolute;left: 0;right: 0;margin: auto;bottom: 20px">上传数据
+            </button>
         </form>
     </div>
 </div>
 <script>
     $(document).ready(function () {
-
+        $("#submit").click(function () {
+            $.post({
+                url: "uploadRawData",
+                data: $("#form").serializeArray(),
+                success: function (res) {
+                    console.log(res)
+                }
+            })
+            return false
+        })
 
 
         // render
