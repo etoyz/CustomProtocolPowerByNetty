@@ -39,7 +39,8 @@
                 </div>
                 <div class="col-3">
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" checked role="switch" id="read-success" name="isReadSuccess">
+                        <input class="form-check-input" type="checkbox" checked role="switch" id="read-success"
+                               name="isReadSuccess">
                         <label class="form-check-label" for="read-success" id="read-ind">读取成功</label>
                     </div>
                 </div>
@@ -104,15 +105,16 @@
         // render
         {
             function render() {
-                // ControlPanel
                 $(".sub_ctl").hide()
-                $("#" + $("#func-select").val()).show()
-
                 // read status label
-                if ($("#read-success").prop("checked"))
+                if ($("#read-success").prop("checked")) {
                     $("#read-ind").html("读取成功")
-                else
+
+                    // ControlPanel
+                    $("#" + $("#func-select").val()).show()
+                } else {
                     $("#read-ind").html("读取失败")
+                }
             }
 
             render()
