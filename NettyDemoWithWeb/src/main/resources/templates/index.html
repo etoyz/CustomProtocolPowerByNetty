@@ -29,55 +29,55 @@
         <form id="form">
             <div class="row align-items-end">
                 <div class="col-7">
-                    <select class="form-select" id="func-select" aria-label="功能选择">
-                        <option selected value="system">系统信息</option>
-                        <option value="fault">故障信息</option>
-                        <option value="partition">分区信息</option>
-                        <option value="detector">探测器信息</option>
-                        <option value="fire">灭火器信息</option>
+                    <select class="form-select" id="func-select" aria-label="功能选择" name="functionCode">
+                        <option selected value="60">系统信息</option>
+                        <option value="70">故障信息</option>
+                        <option value="80">分区信息</option>
+                        <option value="90">探测器信息</option>
+                        <option value="A0">灭火器信息</option>
                     </select>
                 </div>
                 <div class="col-3">
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" checked role="switch" id="read-success">
+                        <input class="form-check-input" type="checkbox" checked role="switch" id="read-success" name="isReadSuccess">
                         <label class="form-check-label" for="read-success" id="read-ind">读取成功</label>
                     </div>
                 </div>
             </div>
             <div class="dropdown-divider" style="margin-bottom: 20px"></div>
             <div id="control-panel">
-                <div id="system" class="sub_ctl">
+                <div id="60" class="sub_ctl">
                     <div class="row align-items-end">
                         <div class="col">
                             <div class="form-check form-switch">
                                 <label class="form-check-label">总报警个数</label>
-                                <input class="input-group-sm" name="alarm">
+                                <input class="input-group-sm" name="alarmCount">
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-check form-switch">
                                 <label class="form-check-label">总故障个数</label>
-                                <input class="input-group-sm" name="fault">
+                                <input class="input-group-sm" name="faultCount">
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-check form-switch">
                                 <label class="form-check-label">总探测器个数</label>
-                                <input class="input-group-sm" name="detector">
+                                <input class="input-group-sm" name="detectorCount">
                             </div>
                         </div>
                     </div>
                 </div>
-                <div id="fault" class="sub_ctl">
+                <div id="70" class="sub_ctl">
                     故障信息
                 </div>
-                <div id="partition" class="sub_ctl">
+                <div id="80" class="sub_ctl">
                     分区信息
                 </div>
-                <div id="detector" class="sub_ctl">
+                <div id="90" class="sub_ctl">
                     探测器信息
                 </div>
-                <div id="fire" class="sub_ctl">
+                <div id="A0" class="sub_ctl">
                     灭火器信息
                 </div>
             </div>
