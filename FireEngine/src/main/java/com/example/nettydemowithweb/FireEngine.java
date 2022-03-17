@@ -28,7 +28,7 @@ public class FireEngine {
     }
 
     String addHeadAndTail(String statusCode) {
-        int length = 2 + 2 + 1 + statusCode.length() + 1 + 1;
+        int length = 2 + 2 + 1 + statusCode.length() / 2 + 1 + 1; // 长度单位是字节
         int id = (new Random()).nextInt((int) Math.pow(2, 8));
         String crc = "00"; // TODO
         return "514E" + fixHexStr(Integer.toHexString(length), 4)
