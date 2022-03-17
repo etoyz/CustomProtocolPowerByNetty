@@ -36,12 +36,12 @@ public class FireEngine {
                 + statusCode + crc + "45";
     }
 
-    public void sendToServer(BigInteger binaryCode) {
+    public void sendToServer(BigInteger binaryCode, String ipStr) {
         try {
             // Step 1:Create the socket object for
             // carrying the data.
             DatagramSocket ds = new DatagramSocket();
-            InetAddress ip = InetAddress.getByName("127.0.0.1");
+            InetAddress ip = InetAddress.getByName(ipStr);
 
             // convert the BigInteger into the byte array.
 //            byte[] buf = binaryCode.toByteArray();

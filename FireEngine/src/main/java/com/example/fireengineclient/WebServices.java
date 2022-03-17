@@ -35,7 +35,7 @@ public class WebServices {
         System.out.println("上传二进制串到工控主机：\t" + statusCodeBinaryAll.toString(2));
 
         // 发送二进制串到远程主机 TODO
-        fireEngine.sendToServer(statusCodeBinaryAll);
+        fireEngine.sendToServer(statusCodeBinaryAll, map.get("ip"));
 
         return "ok";
     }

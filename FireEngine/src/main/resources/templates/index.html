@@ -23,7 +23,7 @@
 <body>
 <div class="card" id="main">
     <div class="card-header">
-        <h5 class="">模拟消防主机</h5>
+        <h5 style="text-align: center">模拟消防主机</h5>
     </div>
     <div class="card-body">
         <form id="form">
@@ -82,9 +82,12 @@
                     灭火器信息
                 </div>
             </div>
-            <button type="submit" id="submit" class="btn btn-primary"
-                    style="position: absolute;left: 0;right: 0;margin: auto;bottom: 20px">上传数据
-            </button>
+            <div style="position: absolute;left: 0;right: 0;margin: auto;bottom: 20px;text-align: center">
+                <div class="dropdown-divider" style="margin-bottom: 10px"></div>
+                <label class="form-check-label" for="ip" id="">上位机IP</label>
+                <input class="input-group-sm" id="ip" name="ip" value="127.0.0.1">
+                <button type="submit" id="submit" class="btn btn-primary">上传数据</button>
+            </div>
         </form>
     </div>
 </div>
