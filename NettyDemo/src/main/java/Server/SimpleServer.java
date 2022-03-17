@@ -1,12 +1,12 @@
 package Server;
 
-import io.netty.bootstrap.ServerBootstrap;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioDatagramChannel;
 
 /**
  * Description: Netty 简单服务端示例
@@ -19,15 +19,15 @@ public class SimpleServer {
 
     public static void main(String[] args) {
         // linux 下建议使用 EpollEventLoopGroup
-        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        EventLoopGroup acceptGroup = new NioEventLoopGroup();
 
-        ServerBootstrap bootstrap = new ServerBootstrap()
-                .group(bossGroup, workerGroup)
-                .channel(NioServerSocketChannel.class)
-                .childHandler(new ChannelInitializer<SocketChannel>() {
+        Bootstrap bootstrap = new Bootstrap()
+                .group(acceptGroup)
+                .channel(NioDatagramChannel.class)
+                .option(ChannelOption.SO_BROADCAST, true)
+                .handler(new ChannelInitializer<NioDatagramChannel>() {
                     @Override
-                    protected void initChannel(SocketChannel ch) throws Exception {
+                    protected void initChannel(NioDatagramChannel ch) throws Exception {
                         ch.pipeline().addLast(new SimpleServerHandler());
                     }
                 });
@@ -38,8 +38,7 @@ public class SimpleServer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
-            bossGroup.shutdownGracefully();
-            workerGroup.shutdownGracefully();
+            acceptGroup.shutdownGracefully();
         }
     }
 

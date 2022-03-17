@@ -7,12 +7,15 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.CharsetUtil;
 
+import java.math.BigInteger;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.Scanner;
 
 /**
@@ -24,7 +27,8 @@ import java.util.Scanner;
  */
 public class SimpleClient {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        new SimpleClient().sendToServer(new BigInteger("10000000000000", 10));
         // linux 下建议使用 EpollEventLoopGroup
         EventLoopGroup loopGroup = new NioEventLoopGroup();
 
@@ -57,4 +61,23 @@ public class SimpleClient {
         }
     }
 
+    private void sendToServer(BigInteger binaryCode) throws Exception {
+        // Step 1:Create the socket object for
+        // carrying the data.
+        DatagramSocket ds = new DatagramSocket();
+
+        InetAddress ip = InetAddress.getByName("127.0.0.1");
+
+        // convert the String input into the byte array.
+        byte buf[] = binaryCode.toByteArray();
+
+        // Step 2 : Create the datagramPacket for sending
+        // the data.
+        DatagramPacket DpSend =
+                new DatagramPacket(buf, buf.length, ip, 688);
+
+        // Step 3 : invoke the send call to actually send
+        // the data.
+        ds.send(DpSend);
+    }
 }
