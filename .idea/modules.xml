@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/FireEngine/FireEngine.iml" filepath="$PROJECT_DIR$/FireEngine/FireEngine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/FireEngineServer/FireEngineServer.iml" filepath="$PROJECT_DIR$/FireEngineServer/FireEngineServer.iml" />
       <module fileurl="file://$PROJECT_DIR$/NettyDemo/NettyDemo.iml" filepath="$PROJECT_DIR$/NettyDemo/NettyDemo.iml" />
-      <module fileurl="file://$PROJECT_DIR$/NettyDemoWithWeb/NettyDemoWithWeb.iml" filepath="$PROJECT_DIR$/NettyDemoWithWeb/NettyDemoWithWeb.iml" />
     </modules>
   </component>
 </project>

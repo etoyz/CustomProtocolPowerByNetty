@@ -6,19 +6,22 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="NettyDemoWithWeb" />
         <module name="NettyDemo" />
+        <module name="FireEngineServer" />
+        <module name="FireEngine" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="FireEngine" target="11" />
+      <module name="FireEngineServer" target="11" />
       <module name="NettyDemo" target="11" />
-      <module name="NettyDemoWithWeb" target="11" />
       <module name="untitled" target="1.5" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="NettyDemoWithWeb" options="-parameters" />
+      <module name="FireEngine" options="-parameters" />
+      <module name="FireEngineServer" options="-parameters" />
     </option>
   </component>
 </project>
