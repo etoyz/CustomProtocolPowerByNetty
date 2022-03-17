@@ -1,4 +1,4 @@
-package com.example.nettydemowithweb;
+package com.example.fireengineclient;
 
 import java.math.BigInteger;
 import java.net.DatagramPacket;
