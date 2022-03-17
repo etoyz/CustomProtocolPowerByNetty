@@ -14,15 +14,9 @@ public class WebServices {
 
     @RequestMapping("getServerStatus")
     public Map<String, ArrayList<String[]>> uploadRawData() {
-        Map<String, ArrayList<String[]>> map = new HashMap<>();
-        ArrayList<String[]> dataList = new ArrayList<>();
-        String[] tmp = new String[2];
-        for (String status : ServerStatus.receivedStatusCode) {
-            tmp[0] = "localhost"; // IP
-            tmp[1] = status;
+        ArrayList<String[]> dataList = new ArrayList<>(ServerStatus.receivedStatus);
 
-            dataList.add(tmp);
-        }
+        Map<String, ArrayList<String[]>> map = new HashMap<>();
 
         map.put("data", dataList);
         return map;
