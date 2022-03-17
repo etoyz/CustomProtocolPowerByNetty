@@ -8,6 +8,7 @@ import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @RestController
@@ -49,14 +50,15 @@ public class WebServices {
             // carrying the data.
             DatagramSocket ds = new DatagramSocket();
             InetAddress ip = InetAddress.getByName("127.0.0.1");
+
             // convert the BigInteger into the byte array.
-            byte[] buf = binaryCode.toByteArray();
-            if (buf[0] == 0) {
-                byte[] tmp = new byte[buf.length - 1];
-                System.arraycopy(buf, 1, tmp, 0, tmp.length);
-                buf = tmp;
-            }
 //            byte[] buf = binaryCode.toByteArray();
+//            if (buf[0] == 0) {
+//                byte[] tmp = new byte[buf.length - 1];
+//                System.arraycopy(buf, 1, tmp, 0, tmp.length);
+//                buf = tmp;
+//            }
+            byte[] buf = binaryCode.toString(2).getBytes(StandardCharsets.UTF_8);
 
             // Step 2 : Create the datagramPacket for sending
             // the data.
