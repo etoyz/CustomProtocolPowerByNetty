@@ -8,7 +8,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/")
-public class Server {
+public class Index {
 
     @RequestMapping("uploadRawData")
     public String uploadRawData(@RequestParam Map<String, String> map) {
@@ -21,7 +21,11 @@ public class Server {
         status.faultCount = Integer.toHexString(Integer.parseInt(getFromMap(map, "faultCount")));
         status.detectorCount = Integer.toHexString(Integer.parseInt(getFromMap(map, "detectorCount")));
 
-        System.out.println(status.getHexStatusCode());
+
+        // Log
+        System.out.println("\n\n模拟消费主机...");
+        System.out.println("生成部分报文内容：\t" + status.getHexStatusCode());
+        System.out.println("生成全部报文数据：\t" + status.addHeadAndTail(status.getHexStatusCode()));
 
         return "ok";
     }

@@ -1,5 +1,7 @@
 package com.example.nettydemowithweb.netty;
 
+import java.util.Random;
+
 public class FireEngineStatus {
     String getHexStatusCode() {
         if (!isReadSuccess.equals("on")) { // 如果读取失败
@@ -20,6 +22,12 @@ public class FireEngineStatus {
         return "";
     }
 
+    String addHeadAndTail(String s) {
+        int length = 2 + 2 + 1 + s.length() + 1 + 1;
+        int id = (new Random()).nextInt((int) Math.pow(2, 8));
+        String crc = "00"; // TODO
+        return "514E" + Integer.toHexString(length) + Integer.toHexString(id) + s + crc + "45";
+    }
 
     /**
      * 功能码
