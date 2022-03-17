@@ -15,13 +15,13 @@ public class WebServices {
     public String uploadRawData(@RequestParam Map<String, String> map) {
         // 初始化消费主机
         FireEngine fireEngine = new FireEngine();
-        fireEngine.functionCode = map.get("functionCode");
-        fireEngine.isReadSuccess = map.get("isReadSuccess");
+        fireEngine.setFunctionCode(map.get("functionCode"));
+        fireEngine.setIsReadSuccess(map.get("isReadSuccess"));
 //        fireEngine.dataFormat = map.get("dataFormat");
-        fireEngine.count = getHexStrFromMap(map, "count");
-        fireEngine.alarmCount = getHexStrFromMap(map, "alarmCount");
-        fireEngine.faultCount = getHexStrFromMap(map, "faultCount");
-        fireEngine.detectorCount = getHexStrFromMap(map, "detectorCount");
+        fireEngine.setCount(getHexStrFromMap(map, "count"));
+        fireEngine.setAlarmCount(getHexStrFromMap(map, "alarmCount"));
+        fireEngine.setFaultCount(getHexStrFromMap(map, "faultCount"));
+        fireEngine.setDetectorCount(getHexStrFromMap(map, "detectorCount"));
 
 
         // 输出日志信息

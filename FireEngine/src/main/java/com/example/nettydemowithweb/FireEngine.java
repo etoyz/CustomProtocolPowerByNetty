@@ -67,31 +67,31 @@ public class FireEngine {
     /**
      * 功能码
      */
-    public String functionCode;
+    private String functionCode;
     /**
      * 标识符
      */
-    public String isReadSuccess;
+    private String isReadSuccess;
     /**
      * 数据格式
      */
-    public String dataFormat;
+    private String dataFormat;
     /**
      * 个数
      */
-    public String count;
+    private String count;
     /**
      * 总报警个数
      */
-    public String alarmCount;
+    private String alarmCount;
     /**
      * 总故障个数
      */
-    public String faultCount;
+    private String faultCount;
     /**
      * 总探测器个数
      */
-    public String detectorCount;
+    private String detectorCount;
 
     /**
      * 各类功能码
@@ -101,4 +101,32 @@ public class FireEngine {
     public static final String FUN_PARTITION_INFO = "80";
     public static final String FUN_DETECTOR_INFO = "90";
     public static final String FUN_FIRE_INFO = "A0";
+
+    public void setFunctionCode(String functionCode) {
+        this.functionCode = functionCode;
+    }
+
+    public void setIsReadSuccess(String isReadSuccess) {
+        this.isReadSuccess = isReadSuccess;
+    }
+
+    public void setDataFormat(String dataFormat) {
+        this.dataFormat = dataFormat;
+    }
+
+    public void setCount(String count) {
+        this.count = count;
+    }
+
+    public void setAlarmCount(String alarmCount) {
+        this.alarmCount = alarmCount;
+    }
+
+    public void setFaultCount(String faultCount) {
+        this.faultCount = faultCount;
+    }
+
+    public void setDetectorCount(String detectorCount) {
+        this.detectorCount = detectorCount;
+    }
 }
