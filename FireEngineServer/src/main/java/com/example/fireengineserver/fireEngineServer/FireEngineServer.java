@@ -8,7 +8,10 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 
+import java.util.ArrayList;
+
 public class FireEngineServer {
+    public static ArrayList<String[]> receivedStatus = new ArrayList<>();
 
     public static void startServer() {
 

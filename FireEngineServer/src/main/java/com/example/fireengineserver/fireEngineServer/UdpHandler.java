@@ -27,7 +27,7 @@ public class UdpHandler extends SimpleChannelInboundHandler<DatagramPacket> {
         System.out.println("十六进制表示：\t\t" + hexStr.toUpperCase(Locale.ROOT) + "H");
 
         // 将接收到的消防主机数据存储下来
-        ServerStatus.receivedStatus.add(new String[]{
+        FireEngineServer.receivedStatus.add(new String[]{
                 msg.sender().getHostString() + ":" + msg.sender().getPort(),
                 hexStr,
                 new SimpleDateFormat("MM/dd HH:mm:ss").format(new Date())

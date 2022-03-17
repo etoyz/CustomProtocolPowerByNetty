@@ -1,6 +1,6 @@
 package com.example.fireengineserver;
 
-import com.example.fireengineserver.fireEngineServer.ServerStatus;
+import com.example.fireengineserver.fireEngineServer.FireEngineServer;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,7 +14,7 @@ public class WebServices {
 
     @RequestMapping("getServerStatus")
     public Map<String, ArrayList<String[]>> uploadRawData() {
-        ArrayList<String[]> dataList = new ArrayList<>(ServerStatus.receivedStatus);
+        ArrayList<String[]> dataList = new ArrayList<>(FireEngineServer.receivedStatus);
 
         Map<String, ArrayList<String[]>> map = new HashMap<>();
 
