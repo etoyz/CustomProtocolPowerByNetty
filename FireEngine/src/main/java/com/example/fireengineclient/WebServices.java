@@ -45,6 +45,11 @@ public class WebServices {
         }
     }
 
+    @RequestMapping("getRemoteResponse")
+    public String getRemoteResponse() {
+        return FireEngine.remoteResponse;
+    }
+
     private String getHexStrFromMap(Map<String, String> map, String key) {
         if (map.get(key) == null || map.get(key).equals(""))
             return "0";

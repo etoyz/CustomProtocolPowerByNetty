@@ -8,6 +8,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 public class FireEngine {
+    public static String remoteResponse = "";
+
     String getHexStatusCodeString() {
         if (!"on".equals(isReadSuccess)) { // 如果读取失败
             return functionCode + "010100";

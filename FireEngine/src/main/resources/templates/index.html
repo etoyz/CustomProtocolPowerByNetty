@@ -100,7 +100,22 @@
                 url: "uploadRawData",
                 data: $("#form").serializeArray(),
                 success: function (res) {
-                    $("#status-label").html(res)
+                    if (res !== "ok")
+                        $("#status-label").html(res)
+                    else {
+                        $("#status-label").html("数据包发送成功，等待服务器响应...")
+                        setTimeout(function () { // 等待1s后，获取服务器响应内容
+                            $.post({
+                                url: "getRemoteResponse",
+                                success: function (res) {
+                                    if (res == "")
+                                        $("#status-label").html("获取服务器响应失败！")
+                                    else
+                                        $("#status-label").html("服务器响应数据：" + res)
+                                }
+                            })
+                        }, 1000)
+                    }
                 }
             })
             return false
