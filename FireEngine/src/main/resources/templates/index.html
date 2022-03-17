@@ -84,9 +84,11 @@
             </div>
             <div style="position: absolute;left: 0;right: 0;margin: auto;bottom: 20px;text-align: center">
                 <div class="dropdown-divider" style="margin-bottom: 10px"></div>
-                <label class="form-check-label" for="ip" id="">上位机IP</label>
+                <label class="form-check-label" for="ip">上位机IP</label>
                 <input class="input-group-sm" id="ip" name="ip" value="127.0.0.1">
                 <button type="submit" id="submit" class="btn btn-primary">上传数据</button>
+                <label class="form-check-label" style="color: red;font-weight: bold;margin-left: 10px"
+                       id="status-label"></label>
             </div>
         </form>
     </div>
@@ -98,7 +100,7 @@
                 url: "uploadRawData",
                 data: $("#form").serializeArray(),
                 success: function (res) {
-                    console.log(res)
+                    $("#status-label").html(res)
                 }
             })
             return false

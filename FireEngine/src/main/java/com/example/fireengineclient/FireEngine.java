@@ -36,34 +36,29 @@ public class FireEngine {
                 + statusCode + crc + "45";
     }
 
-    public void sendToServer(BigInteger binaryCode, String ipStr) {
-        try {
-            // Step 1:Create the socket object for
-            // carrying the data.
-            DatagramSocket ds = new DatagramSocket();
-            InetAddress ip = InetAddress.getByName(ipStr);
+    public void sendToServer(BigInteger binaryCode, String ipStr) throws Exception {
+        // Step 1:Create the socket object for
+        // carrying the data.
+        DatagramSocket ds = new DatagramSocket();
+        InetAddress ip = InetAddress.getByName(ipStr);
 
-            // convert the BigInteger into the byte array.
+        // convert the BigInteger into the byte array.
 //            byte[] buf = binaryCode.toByteArray();
 //            if (buf[0] == 0) {
 //                byte[] tmp = new byte[buf.length - 1];
 //                System.arraycopy(buf, 1, tmp, 0, tmp.length);
 //                buf = tmp;
 //            }
-            byte[] buf = binaryCode.toString(2).getBytes(StandardCharsets.UTF_8);
+        byte[] buf = binaryCode.toString(2).getBytes(StandardCharsets.UTF_8);
 
-            // Step 2 : Create the datagramPacket for sending
-            // the data.
-            DatagramPacket DpSend =
-                    new DatagramPacket(buf, buf.length, ip, 688);
+        // Step 2 : Create the datagramPacket for sending
+        // the data.
+        DatagramPacket DpSend =
+                new DatagramPacket(buf, buf.length, ip, 688);
 
-            // Step 3 : invoke the send call to actually send
-            // the data.
-            ds.send(DpSend);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // Step 3 : invoke the send call to actually send
+        // the data.
+        ds.send(DpSend);
     }
 
     /**
