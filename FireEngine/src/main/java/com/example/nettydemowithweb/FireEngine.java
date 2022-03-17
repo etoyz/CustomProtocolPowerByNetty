@@ -31,7 +31,9 @@ public class FireEngine {
         int length = 2 + 2 + 1 + statusCode.length() + 1 + 1;
         int id = (new Random()).nextInt((int) Math.pow(2, 8));
         String crc = "00"; // TODO
-        return "514E" + Integer.toHexString(length) + Integer.toHexString(id) + statusCode + crc + "45";
+        return "514E" + fixHexStr(Integer.toHexString(length), 4)
+                + fixHexStr(Integer.toHexString(id), 2)
+                + statusCode + crc + "45";
     }
 
     public void sendToServer(BigInteger binaryCode) {
@@ -103,30 +105,39 @@ public class FireEngine {
     public static final String FUN_FIRE_INFO = "A0";
 
     public void setFunctionCode(String functionCode) {
-        this.functionCode = functionCode;
+        this.functionCode = fixHexStr(functionCode, 2);
     }
 
     public void setIsReadSuccess(String isReadSuccess) {
-        this.isReadSuccess = isReadSuccess;
+        this.isReadSuccess = fixHexStr(isReadSuccess, 2);
     }
 
     public void setDataFormat(String dataFormat) {
-        this.dataFormat = dataFormat;
+        this.dataFormat = fixHexStr(dataFormat, 2);
     }
 
     public void setCount(String count) {
-        this.count = count;
+        this.count = fixHexStr(count, 2);
     }
 
     public void setAlarmCount(String alarmCount) {
-        this.alarmCount = alarmCount;
+        this.alarmCount = fixHexStr(alarmCount, 4);
     }
 
     public void setFaultCount(String faultCount) {
-        this.faultCount = faultCount;
+        this.faultCount = fixHexStr(faultCount, 4);
     }
 
     public void setDetectorCount(String detectorCount) {
-        this.detectorCount = detectorCount;
+        this.detectorCount = fixHexStr(detectorCount, 4);
+    }
+
+    private String fixHexStr(String hexStr, int targetLength) {
+        if (hexStr == null) {
+            return "0".repeat(Math.max(0, targetLength));
+        } else if (hexStr.length() < targetLength) {
+            return "0".repeat(Math.max(0, targetLength - hexStr.length())) + hexStr;
+        }
+        return hexStr.substring(0, targetLength);
     }
 }
