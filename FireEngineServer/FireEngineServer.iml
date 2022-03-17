@@ -96,5 +96,6 @@
     <orderEntry type="library" name="Maven: io.netty:netty-buffer:4.1.74.Final" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-resolver:4.1.74.Final" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-codec:4.1.75.Final" level="project" />
+    <orderEntry type="library" name="jquery.dataTables" level="application" />
   </component>
 </module>

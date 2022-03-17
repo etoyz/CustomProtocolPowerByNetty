@@ -8,6 +8,6 @@ public class CustomLogicHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         String hexStr = (String) msg;
 
-        System.out.println(msg);
+        ServerStatus.receivedStatusCode.add(hexStr);
     }
 }
