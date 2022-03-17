@@ -1,9 +1,10 @@
-package com.example.nettydemowithweb.netty;
+package com.example.nettydemowithweb;
 
+import java.math.BigInteger;
 import java.util.Random;
 
-public class FireEngineStatus {
-    String getHexStatusCode() {
+public class FireEngine {
+    String getHexStatusCodeString() {
         if (!isReadSuccess.equals("on")) { // 如果读取失败
             return functionCode + "010100";
         } else { // 如果读取成功
@@ -22,11 +23,15 @@ public class FireEngineStatus {
         return "";
     }
 
-    String addHeadAndTail(String s) {
-        int length = 2 + 2 + 1 + s.length() + 1 + 1;
+    String addHeadAndTail(String statusCode) {
+        int length = 2 + 2 + 1 + statusCode.length() + 1 + 1;
         int id = (new Random()).nextInt((int) Math.pow(2, 8));
         String crc = "00"; // TODO
-        return "514E" + Integer.toHexString(length) + Integer.toHexString(id) + s + crc + "45";
+        return "514E" + Integer.toHexString(length) + Integer.toHexString(id) + statusCode + crc + "45";
+    }
+
+    BigInteger toBinary(String hexStr) {
+        return new BigInteger(hexStr, 16);
     }
 
     /**
