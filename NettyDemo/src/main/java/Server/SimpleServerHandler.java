@@ -23,7 +23,7 @@ public class SimpleServerHandler extends ChannelInboundHandlerAdapter {
         DatagramPacket packet = (DatagramPacket) msg;
         byte[] buf = new byte[packet.content().readableBytes()];
         packet.content().readBytes(buf);
-
+        System.out.println(buf);
         ByteBuf byteBuf = Unpooled.copiedBuffer("happy", CharsetUtil.UTF_8);
         ctx.writeAndFlush(byteBuf);
     }

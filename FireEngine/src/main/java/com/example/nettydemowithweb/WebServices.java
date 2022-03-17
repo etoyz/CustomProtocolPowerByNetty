@@ -12,7 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/")
-public class Index {
+public class WebServices {
 
     @RequestMapping("uploadRawData")
     public String uploadRawData(@RequestParam Map<String, String> map) {
@@ -43,15 +43,7 @@ public class Index {
         return "ok";
     }
 
-    String getFromMap(Map<String, String> map, String key) {
-        if (map.get(key) == null)
-            return "0";
-        else
-            return map.get(key);
-    }
-
     private void sendToServer(BigInteger binaryCode) {
-
         try {
             // Step 1:Create the socket object for
             // carrying the data.
@@ -78,6 +70,13 @@ public class Index {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    String getFromMap(Map<String, String> map, String key) {
+        if (map.get(key) == null || map.get(key).equals(""))
+            return "0";
+        else
+            return map.get(key);
     }
 }
 
