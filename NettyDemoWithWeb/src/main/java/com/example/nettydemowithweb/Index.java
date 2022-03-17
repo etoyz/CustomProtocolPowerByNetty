@@ -13,6 +13,7 @@ public class Index {
 
     @RequestMapping("uploadRawData")
     public String uploadRawData(@RequestParam Map<String, String> map) {
+        // 初始化消费主机
         FireEngine fireEngine = new FireEngine();
         fireEngine.functionCode = getFromMap(map, "functionCode");
         fireEngine.isReadSuccess = getFromMap(map, "isReadSuccess");
@@ -23,7 +24,7 @@ public class Index {
         fireEngine.detectorCount = Integer.toHexString(Integer.parseInt(getFromMap(map, "detectorCount")));
 
 
-        // Log
+        // 输出日志信息
         String statusCodeString = fireEngine.getHexStatusCodeString();
         String statusCodeStringAll = fireEngine.addHeadAndTail(statusCodeString);
         BigInteger statusCodeBinaryAll = fireEngine.toBinary(statusCodeStringAll);
@@ -32,6 +33,9 @@ public class Index {
         System.out.println("生成全部报文数据：\t\t" + statusCodeStringAll + "H");
         System.out.println("十进制表示：\t\t\t" + statusCodeBinaryAll.toString(10));
         System.out.println("上传二进制串到工控主机：\t" + statusCodeBinaryAll.toString(2));
+
+        // 发送二进制串到远程主机 TODO
+
 
         return "ok";
     }
