@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 public class UdpHandler extends SimpleChannelInboundHandler<DatagramPacket> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) {
-        System.out.println("收到UDP数据报：\t" + msg.toString());
+        System.out.println("\n\n收到UDP数据报：\t" + msg.toString());
         byte[] bytes = new byte[msg.content().readableBytes()];
         msg.content().readBytes(bytes);
 
