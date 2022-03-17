@@ -1,11 +1,15 @@
 package com.example.nettydemowithweb;
 
 import java.math.BigInteger;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 public class FireEngine {
     String getHexStatusCodeString() {
-        if (!isReadSuccess.equals("on")) { // 如果读取失败
+        if (!"on".equals(isReadSuccess)) { // 如果读取失败
             return functionCode + "010100";
         } else { // 如果读取成功
             if (functionCode.equals(FUN_SYSTEM_INFO)) { // 系统信息报文
@@ -30,8 +34,34 @@ public class FireEngine {
         return "514E" + Integer.toHexString(length) + Integer.toHexString(id) + statusCode + crc + "45";
     }
 
-    BigInteger toBinary(String hexStr) {
-        return new BigInteger(hexStr, 16);
+    public void sendToServer(BigInteger binaryCode) {
+        try {
+            // Step 1:Create the socket object for
+            // carrying the data.
+            DatagramSocket ds = new DatagramSocket();
+            InetAddress ip = InetAddress.getByName("127.0.0.1");
+
+            // convert the BigInteger into the byte array.
+//            byte[] buf = binaryCode.toByteArray();
+//            if (buf[0] == 0) {
+//                byte[] tmp = new byte[buf.length - 1];
+//                System.arraycopy(buf, 1, tmp, 0, tmp.length);
+//                buf = tmp;
+//            }
+            byte[] buf = binaryCode.toString(2).getBytes(StandardCharsets.UTF_8);
+
+            // Step 2 : Create the datagramPacket for sending
+            // the data.
+            DatagramPacket DpSend =
+                    new DatagramPacket(buf, buf.length, ip, 688);
+
+            // Step 3 : invoke the send call to actually send
+            // the data.
+            ds.send(DpSend);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
