@@ -97,10 +97,11 @@
 </div>
 <script>
     $(document).ready(function () {
-
+        let myInterval;
         $("#submit").click(function () {
             $("#status-label").html("等待服务器响应...")
-            i = setInterval(function () {
+            clearInterval(myInterval) // close previous interval event
+            myInterval = setInterval(function () {
                 $.post({
                     url: "getFireEngineStatus",
                     success: function (res) {
