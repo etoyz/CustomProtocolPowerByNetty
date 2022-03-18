@@ -32,7 +32,8 @@
             "ajax": 'getServerStatus',
             searching: false,
             paging: false,
-            info: false
+            info: false,
+            "order": [[2, "desc"] ],
         });
         setInterval(function () {
             table.ajax.reload(null, false);
