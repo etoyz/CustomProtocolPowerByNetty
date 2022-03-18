@@ -24,8 +24,8 @@ public class FireEngineServer {
                     @Override
                     protected void initChannel(NioDatagramChannel ch) throws Exception {
                         ch.pipeline()
-                                .addLast(new UdpHandler())
-                                .addLast(new FireEngineEncoder());
+                                .addLast(new FireEngineEncoder())
+                                .addLast(new FireEngineDecoder());
                     }
                 });
 

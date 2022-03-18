@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.Locale;
 
 
-public class UdpHandler extends SimpleChannelInboundHandler<DatagramPacket> {
+public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacket> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) {
         // 处理UDP数据报
