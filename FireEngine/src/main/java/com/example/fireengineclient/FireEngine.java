@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class FireEngine {
-    public static String remoteResponse = "";
+    public static String currentStatus = "暂未初始化！";
 
     // 自定义构造方法，初始化消防主机
     public FireEngine(Map<String, String> map) {
@@ -21,6 +21,8 @@ public class FireEngine {
         setAlarmCount(getHexStrFromMap(map, "alarmCount"));
         setFaultCount(getHexStrFromMap(map, "faultCount"));
         setDetectorCount(getHexStrFromMap(map, "detectorCount"));
+
+        currentStatus = "初始化成功！";
     }
 
     // 向控制台输出信息
@@ -63,6 +65,30 @@ public class FireEngine {
         ds.send(DpSend);
     }
 
+    // 阻塞监听服务器响应
+    public void listenToServer(String ipStr) throws Exception {
+        int SERVICE_PORT = 688;
+
+      /* Instantiate client socket.
+      No need to bind to a specific port */
+        DatagramSocket clientSocket = new DatagramSocket(788);
+
+        InetAddress IPAddress = InetAddress.getByName(ipStr);
+
+        byte[] receivingDataBuffer = new byte[1024];
+
+        // Get the server response
+        DatagramPacket receivingPacket = new DatagramPacket(receivingDataBuffer, receivingDataBuffer.length);
+        updateStatus("等待服务器响应...");
+        clientSocket.receive(receivingPacket);
+
+        // Printing the received data
+        String receivedData = new String(receivingPacket.getData()).trim();
+        updateStatus("收到服务器响应信息: " + receivedData);
+
+        clientSocket.close();
+    }
+
     private String getHexStatusCodeString() {
         if (!"on".equals(isReadSuccess)) { // 如果读取失败
             return functionCode + "010100";
@@ -96,6 +122,11 @@ public class FireEngine {
             return "0";
         else
             return Integer.toHexString(Integer.parseInt(map.get(key)));
+    }
+
+    private void updateStatus(String status) {
+        System.out.println(status);
+        FireEngine.currentStatus = status;
     }
 
     /**

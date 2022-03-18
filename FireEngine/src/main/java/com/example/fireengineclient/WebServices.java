@@ -19,6 +19,8 @@ public class WebServices {
             fireEngine.printLog();
             // 上传数据到远程主机
             fireEngine.sendToServer(map.get("ip"));
+            // 监听响应
+            fireEngine.listenToServer(map.get("ip"));
 
             return "ok";
         } catch (Exception e) {
@@ -29,7 +31,7 @@ public class WebServices {
 
     @RequestMapping("getRemoteResponse")
     public String getRemoteResponse() {
-        return FireEngine.remoteResponse;
+        return FireEngine.currentStatus;
     }
 }
 
