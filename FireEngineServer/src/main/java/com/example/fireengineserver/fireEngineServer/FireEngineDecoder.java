@@ -23,13 +23,13 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
 
         // 将表示二进制的字符串转为原始二进制数字
         BigInteger integer = new BigInteger(binaryCodeString, 2);
-        String hexStr = integer.toString(16);
-        System.out.println("十六进制表示：\t\t" + hexStr.toUpperCase(Locale.ROOT) + "H");
+        String hexStr = integer.toString(16).toUpperCase(Locale.ROOT);
+        System.out.println("十六进制表示：\t\t" + hexStr + "H");
 
-        // 将接收到的消防主机数据存储下来
+        // 将接收到的消防主机数据存储下来(待处理)
         FireEngineServer.receivedStatus.add(new String[]{
                 msg.sender().getHostString() + ":" + msg.sender().getPort(),
-                hexStr,
+                hexStr + "H",
                 new SimpleDateFormat("MM/dd HH:mm:ss").format(new Date())
         });
     }

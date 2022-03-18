@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigInteger;
+import java.util.Locale;
 import java.util.Map;
 
 @RestController
@@ -26,8 +27,8 @@ public class WebServices {
 
 
             // 输出日志信息
-            String statusCodeString = fireEngine.getHexStatusCodeString();
-            String statusCodeStringAll = fireEngine.addHeadAndTail(statusCodeString);
+            String statusCodeString = fireEngine.getHexStatusCodeString().toUpperCase(Locale.ROOT);
+            String statusCodeStringAll = fireEngine.addHeadAndTail(statusCodeString).toUpperCase(Locale.ROOT);
             BigInteger statusCodeBinaryAll = new BigInteger(statusCodeStringAll, 16);
             System.out.println("\n\n模拟消费主机...");
             System.out.println("生成部分报文内容：\t\t" + statusCodeString + "H");
