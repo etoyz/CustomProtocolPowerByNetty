@@ -28,7 +28,7 @@ import java.util.Scanner;
 public class SimpleClient {
 
     public static void main(String[] args) throws Exception {
-        new SimpleClient().sendToServer(new BigInteger("10000000000000", 10));
+        new SimpleClient().listenToServer("127.0.0.1");
         // linux 下建议使用 EpollEventLoopGroup
         EventLoopGroup loopGroup = new NioEventLoopGroup();
 
@@ -79,5 +79,28 @@ public class SimpleClient {
         // Step 3 : invoke the send call to actually send
         // the data.
         ds.send(DpSend);
+    }
+
+    public void listenToServer(String ipStr) throws Exception {
+        int SERVICE_PORT = 688;
+
+      /* Instantiate client socket.
+      No need to bind to a specific port */
+        DatagramSocket clientSocket = new DatagramSocket(788);
+
+        InetAddress IPAddress = InetAddress.getByName(ipStr);
+
+        byte[] receivingDataBuffer = new byte[1024];
+
+        // Get the server response
+        DatagramPacket receivingPacket = new DatagramPacket(receivingDataBuffer, receivingDataBuffer.length);
+        System.out.println("等待788端口连接请求...");
+        clientSocket.receive(receivingPacket);
+
+        // Printing the received data
+        String receivedData = new String(receivingPacket.getData());
+        System.out.println("Sent from the server: " + receivedData);
+
+        clientSocket.close();
     }
 }
