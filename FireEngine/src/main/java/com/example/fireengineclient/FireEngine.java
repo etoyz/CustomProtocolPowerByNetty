@@ -21,8 +21,6 @@ public class FireEngine {
         setAlarmCount(getHexStrFromMap(map, "alarmCount"));
         setFaultCount(getHexStrFromMap(map, "faultCount"));
         setDetectorCount(getHexStrFromMap(map, "detectorCount"));
-
-        currentStatus = "初始化成功！";
     }
 
     // 向控制台输出信息

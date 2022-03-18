@@ -87,40 +87,40 @@
                 <label class="form-check-label" for="ip">上位机IP</label>
                 <input class="input-group-sm" id="ip" name="ip" value="127.0.0.1">
                 <button type="submit" id="submit" class="btn btn-primary">上传数据</button>
-                <label class="form-check-label" style="color: red;font-weight: bold;margin-left: 10px"
+                <label class="form-check-label" style="color: blue;font-weight: bold;margin-left: 10px"
                        id="status-label"></label>
-                <label class="form-check-label" style="color: red;font-weight: bold;margin-left: 10px"
-                       id="status-label1"></label>
+                <label class="form-check-label" style="color: red;font-weight: bold;margin-left: 10px;display: none"
+                       id="status-label-error"></label>
             </div>
         </form>
     </div>
 </div>
 <script>
     $(document).ready(function () {
+
         $("#submit").click(function () {
-            $("#status-label").html("")
-            $("#status-label1").show()
-            setInterval(function () {
+            $("#status-label").html("等待服务器响应...")
+            i = setInterval(function () {
                 $.post({
                     url: "getFireEngineStatus",
                     success: function (res) {
-                        $("#status-label1").html(res)
+                        $("#status-label").html(res)
                     }
                 })
-            }, 200)
+            }, 1000)
             $.post({
                 url: "uploadRawData",
                 data: $("#form").serializeArray(),
                 success: function (res) {
                     if (res !== "ok") {
-                        $("#status-label").html(res)
-                        $("#status-label1").hide()
+                        $("#status-label-error").show().html(res)
+                    } else {
+                        $("#status-label-error").hide()
                     }
                 }
             })
             return false
         })
-
 
         // render
         {
