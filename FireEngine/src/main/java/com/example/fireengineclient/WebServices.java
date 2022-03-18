@@ -26,7 +26,7 @@ public class WebServices {
         } catch (Exception e) {
             e.printStackTrace();
             FireEngine.currentStatus = "出现错误！";
-            return e.getMessage();
+            return e.toString();
         }
     }
 
