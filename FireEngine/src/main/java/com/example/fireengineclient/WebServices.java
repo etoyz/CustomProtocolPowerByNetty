@@ -29,7 +29,7 @@ public class WebServices {
         }
     }
 
-    @RequestMapping("getRemoteResponse")
+    @RequestMapping("getFireEngineStatus")
     public String getRemoteResponse() {
         return FireEngine.currentStatus;
     }

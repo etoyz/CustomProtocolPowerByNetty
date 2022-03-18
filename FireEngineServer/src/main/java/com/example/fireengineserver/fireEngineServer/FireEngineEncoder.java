@@ -22,6 +22,7 @@ public class FireEngineEncoder extends MessageToByteEncoder<String> {
             responseString = responseString.toUpperCase(Locale.ROOT);
 //            ctx.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(responseString.getBytes(StandardCharsets.UTF_8)), InetSocketAddress.createUnresolved("127.0.0.1", 788)));
             // 传统方式发送数据报
+            Thread.sleep(1000);
             new DatagramSocket().send(new java.net.DatagramPacket(responseString.getBytes(), responseString.getBytes().length, InetAddress.getByName("127.0.0.1"), 788));
             return;
         }

@@ -89,6 +89,8 @@
                 <button type="submit" id="submit" class="btn btn-primary">上传数据</button>
                 <label class="form-check-label" style="color: red;font-weight: bold;margin-left: 10px"
                        id="status-label"></label>
+                <label class="form-check-label" style="color: red;font-weight: bold;margin-left: 10px"
+                       id="status-label1"></label>
             </div>
         </form>
     </div>
@@ -96,25 +98,23 @@
 <script>
     $(document).ready(function () {
         $("#submit").click(function () {
+            $("#status-label").html("")
+            $("#status-label1").show()
+            setInterval(function () {
+                $.post({
+                    url: "getFireEngineStatus",
+                    success: function (res) {
+                        $("#status-label1").html(res)
+                    }
+                })
+            }, 200)
             $.post({
                 url: "uploadRawData",
                 data: $("#form").serializeArray(),
                 success: function (res) {
-                    if (res !== "ok")
+                    if (res !== "ok") {
                         $("#status-label").html(res)
-                    else {
-                        $("#status-label").html("数据包发送成功，等待服务器响应...")
-                        setInterval(function () { // 等待1s后，获取服务器响应内容
-                            $.post({
-                                url: "getRemoteResponse",
-                                success: function (res) {
-                                    if (res == "")
-                                        $("#status-label").html("获取服务器响应失败！")
-                                    else
-                                        $("#status-label").html(res)
-                                }
-                            })
-                        }, 200)
+                        $("#status-label1").hide()
                     }
                 }
             })
