@@ -5,40 +5,40 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 
 public class FireEngine {
     public static String remoteResponse = "";
 
-    String getHexStatusCodeString() {
-        if (!"on".equals(isReadSuccess)) { // 如果读取失败
-            return functionCode + "010100";
-        } else { // 如果读取成功
-            if (functionCode.equals(FUN_SYSTEM_INFO)) { // 系统信息报文
-                return "60000103" + alarmCount + faultCount + detectorCount;
-            } else if (functionCode.equals(FUN_FAULT_INFO)) { // 故障信息报文
-                return "700001";
-            } else if (functionCode.equals(FUN_PARTITION_INFO)) { // 分区信息报文
-                return "800001";
-            } else if (functionCode.equals(FUN_DETECTOR_INFO)) { // 探测器信息报文
-                return "900001";
-            } else if (functionCode.equals(FUN_FIRE_INFO)) { // 灭火器信息报文
-                return "A00001";
-            }
-        }
-        return "";
+    // 自定义构造方法，初始化消防主机
+    public FireEngine(Map<String, String> map) {
+        setFunctionCode(map.get("functionCode"));
+        setIsReadSuccess(map.get("isReadSuccess"));
+//        fireEngine.dataFormat = map.get("dataFormat");
+        setCount(getHexStrFromMap(map, "count"));
+        setAlarmCount(getHexStrFromMap(map, "alarmCount"));
+        setFaultCount(getHexStrFromMap(map, "faultCount"));
+        setDetectorCount(getHexStrFromMap(map, "detectorCount"));
     }
 
-    String addHeadAndTail(String statusCode) {
-        int length = 2 + 2 + 1 + statusCode.length() / 2 + 1 + 1; // 长度单位是字节
-        int id = (new Random()).nextInt((int) Math.pow(2, 8));
-        String crc = "00"; // TODO
-        return "514E" + fixHexStr(Integer.toHexString(length), 4)
-                + fixHexStr(Integer.toHexString(id), 2)
-                + statusCode + crc + "45";
+    // 向控制台输出信息
+    public void printLog() {
+        String statusCodeString = getHexStatusCodeString().toUpperCase(Locale.ROOT);
+        String statusCodeStringAll = addHeadAndTail(statusCodeString).toUpperCase(Locale.ROOT);
+        BigInteger statusCodeBinaryAll = new BigInteger(statusCodeStringAll, 16);
+        System.out.println("\n\n模拟消费主机...");
+        System.out.println("生成部分报文内容：\t\t" + statusCodeString + "H");
+        System.out.println("生成全部报文数据：\t\t" + statusCodeStringAll + "H");
+        System.out.println("十进制表示：\t\t\t" + statusCodeBinaryAll.toString(10));
+        System.out.println("上传二进制串到工控主机：\t" + statusCodeBinaryAll.toString(2));
     }
 
-    public void sendToServer(BigInteger binaryCode, String ipStr) throws Exception {
+    // 上传数据到特定主机
+    public void sendToServer(String ipStr) throws Exception {
+        BigInteger binaryCode = new BigInteger(addHeadAndTail(getHexStatusCodeString()), 16);
+
         // Step 1:Create the socket object for
         // carrying the data.
         DatagramSocket ds = new DatagramSocket();
@@ -61,6 +61,41 @@ public class FireEngine {
         // Step 3 : invoke the send call to actually send
         // the data.
         ds.send(DpSend);
+    }
+
+    private String getHexStatusCodeString() {
+        if (!"on".equals(isReadSuccess)) { // 如果读取失败
+            return functionCode + "010100";
+        } else { // 如果读取成功
+            if (functionCode.equals(FUN_SYSTEM_INFO)) { // 系统信息报文
+                return "60000103" + alarmCount + faultCount + detectorCount;
+            } else if (functionCode.equals(FUN_FAULT_INFO)) { // 故障信息报文
+                return "700001";
+            } else if (functionCode.equals(FUN_PARTITION_INFO)) { // 分区信息报文
+                return "800001";
+            } else if (functionCode.equals(FUN_DETECTOR_INFO)) { // 探测器信息报文
+                return "900001";
+            } else if (functionCode.equals(FUN_FIRE_INFO)) { // 灭火器信息报文
+                return "A00001";
+            }
+        }
+        return "";
+    }
+
+    private String addHeadAndTail(String statusCode) {
+        int length = 2 + 2 + 1 + statusCode.length() / 2 + 1 + 1; // 长度单位是字节
+        int id = (new Random()).nextInt((int) Math.pow(2, 8));
+        String crc = "00"; // TODO
+        return "514E" + fixHexStr(Integer.toHexString(length), 4)
+                + fixHexStr(Integer.toHexString(id), 2)
+                + statusCode + crc + "45";
+    }
+
+    private String getHexStrFromMap(Map<String, String> map, String key) {
+        if (map.get(key) == null || map.get(key).equals(""))
+            return "0";
+        else
+            return Integer.toHexString(Integer.parseInt(map.get(key)));
     }
 
     /**
