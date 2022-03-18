@@ -32,5 +32,8 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
                 hexStr + "H",
                 new SimpleDateFormat("MM/dd HH:mm:ss").format(new Date())
         });
+
+
+        ctx.write(hexStr);
     }
 }
