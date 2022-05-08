@@ -3,7 +3,6 @@
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
-        <option value="$PROJECT_DIR$/NettyDemo/pom.xml" />
         <option value="$PROJECT_DIR$/NettyDemoWithWeb/pom.xml" />
         <option value="$PROJECT_DIR$/FireEngineServer/pom.xml" />
         <option value="$PROJECT_DIR$/FireEngine/pom.xml" />

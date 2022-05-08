@@ -8,7 +8,9 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 
 public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacket> {
@@ -26,7 +28,7 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
         String hexStr = integer.toString(16).toUpperCase(Locale.ROOT);
         System.out.println("十六进制表示：\t\t" + hexStr + "H");
 
-        // 将接收到的消防主机数据存储下来(待处理)
+        // 将接收到的消防主机数据存储下来(待处理) // TODO
         FireEngineServer.receivedStatus.add(new String[]{
                 msg.sender().getHostString() + ":" + msg.sender().getPort(),
                 hexStr + "H",
@@ -34,6 +36,10 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
         });
 
 
-        ctx.write(hexStr);
+        Map<String, String> decoderResolveResult = new HashMap<>();
+        decoderResolveResult.put("CLIENT_IP", msg.sender().getHostString());
+        decoderResolveResult.put("CLIENT_PORT", String.valueOf(msg.sender().getPort()));
+        decoderResolveResult.put("DATA", hexStr);
+        ctx.write(decoderResolveResult);
     }
 }

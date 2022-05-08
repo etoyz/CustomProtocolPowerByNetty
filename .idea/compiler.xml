@@ -6,9 +6,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="NettyDemo" />
-        <module name="FireEngineServer" />
         <module name="FireEngine" />
+        <module name="FireEngineServer" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

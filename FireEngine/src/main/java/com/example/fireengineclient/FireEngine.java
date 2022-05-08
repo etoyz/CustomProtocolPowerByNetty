@@ -63,13 +63,15 @@ public class FireEngine {
         ds.send(DpSend);
     }
 
+
+    /* Instantiate client socket.
+      No need to bind to a specific port */
+    private static DatagramSocket clientSocket;
+
     // 阻塞监听服务器响应
     public void listenToServer(String ipStr) throws Exception {
         int SERVICE_PORT = 688;
-
-      /* Instantiate client socket.
-      No need to bind to a specific port */
-        DatagramSocket clientSocket = new DatagramSocket(788);
+        clientSocket = new DatagramSocket(788);
 
         InetAddress IPAddress = InetAddress.getByName(ipStr);
 
@@ -84,6 +86,11 @@ public class FireEngine {
         String receivedData = new String(receivingPacket.getData()).trim();
         updateStatus("收到服务器响应信息: " + receivedData);
 
+        clientSocket.close();
+    }
+
+    // 停止监听服务器响应，防止一直阻塞
+    public static void stopListen() {
         clientSocket.close();
     }
 

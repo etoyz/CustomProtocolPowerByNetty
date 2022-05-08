@@ -34,5 +34,10 @@ public class WebServices {
     public String getRemoteResponse() {
         return FireEngine.currentStatus;
     }
+
+    @RequestMapping("stopListen")
+    public void stopListen() {
+        FireEngine.stopListen();
+    }
 }
 

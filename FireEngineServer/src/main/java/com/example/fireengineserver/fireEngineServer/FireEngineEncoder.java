@@ -7,10 +7,12 @@ import io.netty.handler.codec.MessageToByteEncoder;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Locale;
+import java.util.Map;
 
-public class FireEngineEncoder extends MessageToByteEncoder<String> {
+public class FireEngineEncoder extends MessageToByteEncoder<Map<String, String>> {
     @Override
-    protected void encode(ChannelHandlerContext ctx, String msg, ByteBuf out) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, Map<String, String> map, ByteBuf out) throws Exception {
+        String msg = map.get("DATA");
         String responseString;
         // CRC校验
         String crc = msg.substring(msg.length() - 4, msg.length() - 2);
@@ -23,7 +25,7 @@ public class FireEngineEncoder extends MessageToByteEncoder<String> {
 //            ctx.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(responseString.getBytes(StandardCharsets.UTF_8)), InetSocketAddress.createUnresolved("127.0.0.1", 788)));
             // 传统方式发送数据报
             Thread.sleep(1000);
-            new DatagramSocket().send(new java.net.DatagramPacket(responseString.getBytes(), responseString.getBytes().length, InetAddress.getByName("127.0.0.1"), 788));
+            new DatagramSocket().send(new java.net.DatagramPacket(responseString.getBytes(), responseString.getBytes().length, InetAddress.getByName(map.get("CLIENT_IP")), 788));
             return;
         }
         //提取数据有效部分 ID--数据内容
