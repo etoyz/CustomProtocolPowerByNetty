@@ -15,11 +15,12 @@
         <h5 class="">消防主机上位机仪表盘</h5>
     </div>
     <div class="card-body">
-        <table id="example" class="display" style="width:100%">
+        <table id="dashboard" class="display" style="width:100%">
             <thead>
             <tr>
                 <th>消防主机IP</th>
-                <th>请求报文内容</th>
+                <th>原始请求报文</th>
+                <th>请求内容</th>
                 <th>请求时间</th>
             </tr>
             </thead>
@@ -28,12 +29,12 @@
 </div>
 <script>
     $(document).ready(function () {
-        let table = $('#example').DataTable({
+        let table = $('#dashboard').DataTable({
             "ajax": 'getServerStatus',
             searching: false,
             paging: false,
             info: false,
-            "order": [[2, "desc"] ],
+            "order": [[3, "desc"] ],
         });
         setInterval(function () {
             table.ajax.reload(null, false);

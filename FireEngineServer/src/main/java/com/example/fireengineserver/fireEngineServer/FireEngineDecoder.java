@@ -28,10 +28,13 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
         String hexStr = binaryCode.toString(16).toUpperCase(Locale.ROOT);
         System.out.println("十六进制表示：\t\t" + hexStr + "H");
 
-        // 将接收到的消防主机数据存储下来(待处理) // TODO
+        // 将接收到的消防主机数据存储下来(待处理)
+        String convertedMessage = "待处理";
+        // TODO
         FireEngineServer.receivedStatus.add(new String[]{
                 msg.sender().getHostString() + ":" + msg.sender().getPort(), // 请求者的IP和端口
                 hexStr + "H", // 接收到的数据的16进制表示
+                convertedMessage,
                 new SimpleDateFormat("MM/dd HH:mm:ss").format(new Date()) // 接收到数据的时间
         });
 
