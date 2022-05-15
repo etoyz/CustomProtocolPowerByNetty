@@ -28,7 +28,8 @@ public class FireEngineEncoder extends MessageToByteEncoder<Map<String, String>>
             responseToClient(responseString.getBytes(), ip);
             return;
         } else {
-
+            responseString = "服务不支持"; // TODO
+            responseToClient(responseString.getBytes(), ip);
         }
 
         //提取数据有效部分 ID--数据内容
