@@ -37,11 +37,19 @@
                         <option value="A0">灭火器信息</option>
                     </select>
                 </div>
-                <div class="col-3">
+                <div class="col-2">
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" checked role="switch" id="read-success"
                                name="isReadSuccess">
                         <label class="form-check-label" for="read-success" id="read-ind">读取成功</label>
+                    </div>
+
+                </div>
+                <div class="col-2">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" checked role="switch" id="is-valid"
+                               name="isValid">
+                        <label class="form-check-label" for="is-valid" id="is-valid-ind">有效的数据</label>
                     </div>
                 </div>
             </div>
@@ -149,6 +157,15 @@
 
             $("#func-select").change(function () {
                 render()
+            })
+
+
+            $("#is-valid").change(function () {
+                if ($("#is-valid").prop("checked")) {
+                    $("#is-valid-ind").html("有效的数据")
+                } else {
+                    $("#is-valid-ind").html("无效的数据")
+                }
             })
         }
     });

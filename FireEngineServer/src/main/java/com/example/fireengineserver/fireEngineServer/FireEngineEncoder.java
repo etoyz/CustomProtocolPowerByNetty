@@ -42,10 +42,7 @@ public class FireEngineEncoder extends MessageToByteEncoder<Map<String, String>>
 
     // TODO
     private boolean verifyCRC(String msg, String crc) {
-
-
-        return false;
-//        return new Random().nextBoolean();
+        return crc.equals("00");
     }
 
     private String fixHexStr(String hexStr, int targetLength) {

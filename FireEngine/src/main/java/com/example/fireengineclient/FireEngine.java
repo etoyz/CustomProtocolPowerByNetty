@@ -21,6 +21,7 @@ public class FireEngine {
         setAlarmCount(getHexStrFromMap(map, "alarmCount"));
         setFaultCount(getHexStrFromMap(map, "faultCount"));
         setDetectorCount(getHexStrFromMap(map, "detectorCount"));
+        setIsValid(map.get("isValid"));
     }
 
     // 向控制台输出信息
@@ -117,6 +118,8 @@ public class FireEngine {
         int length = 2 + 2 + 1 + statusCode.length() / 2 + 1 + 1; // 长度单位是字节
         int id = (new Random()).nextInt((int) Math.pow(2, 8));
         String crc = "00"; // TODO
+        if (!"on".equals(isValid)) // 如果数据受损
+            crc = "01";
         return "514E" + fixHexStr(Integer.toHexString(length), 4)
                 + fixHexStr(Integer.toHexString(id), 2)
                 + statusCode + crc + "45";
@@ -134,6 +137,10 @@ public class FireEngine {
         FireEngine.currentStatus = status;
     }
 
+    /**
+     * 是否有效的数据
+     */
+    private String isValid;
     /**
      * 功能码
      */
@@ -177,7 +184,7 @@ public class FireEngine {
     }
 
     public void setIsReadSuccess(String isReadSuccess) {
-        this.isReadSuccess = fixHexStr(isReadSuccess, 2);
+        this.isReadSuccess = isReadSuccess;
     }
 
     public void setDataFormat(String dataFormat) {
@@ -207,5 +214,9 @@ public class FireEngine {
             return "0".repeat(Math.max(0, targetLength - hexStr.length())) + hexStr;
         }
         return hexStr.substring(0, targetLength);
+    }
+
+    public void setIsValid(String isValid) {
+        this.isValid = isValid;
     }
 }
