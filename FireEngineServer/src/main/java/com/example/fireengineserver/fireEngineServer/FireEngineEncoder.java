@@ -6,14 +6,14 @@ import io.netty.handler.codec.MessageToByteEncoder;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.Locale;
 import java.util.Map;
 
 public class FireEngineEncoder extends MessageToByteEncoder<Map<String, String>> {
     @Override
     protected void encode(ChannelHandlerContext ctx, Map<String, String> map, ByteBuf out) throws Exception {
-        String hexStr = map.get("DATA");
-        String responseString; //回复给消防主机的数据
+        String hexStr = map.get("DATA"); // 请求的数据
+        String ip = map.get("CLIENT_IP");
+        String responseString; //上位机回复给消防主机的数据
         // CRC校验
         String crc = hexStr.substring(hexStr.length() - 4, hexStr.length() - 2);
         if (!verifyCRC(hexStr, crc)) { // 若校验失败
@@ -24,13 +24,13 @@ public class FireEngineEncoder extends MessageToByteEncoder<Map<String, String>>
 //            responseString = responseString.toUpperCase(Locale.ROOT);
             responseString = "CRC校验失败";
 //            ctx.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(responseString.getBytes(StandardCharsets.UTF_8)), InetSocketAddress.createUnresolved("127.0.0.1", 788)));
-            // 传统方式发送数据报
-            Thread.sleep(1000);
-            new DatagramSocket().send(new java.net.DatagramPacket(responseString.getBytes(), responseString.getBytes().length, InetAddress.getByName(map.get("CLIENT_IP")), 788));
+            // 响应客户端
+            responseToClient(responseString.getBytes(), ip);
             return;
         } else {
 
         }
+
         //提取数据有效部分 ID--数据内容
         hexStr = hexStr.substring(8); // 去头
         hexStr = hexStr.substring(0, hexStr.length() - 4); // 去尾
@@ -55,5 +55,16 @@ public class FireEngineEncoder extends MessageToByteEncoder<Map<String, String>>
             return "0".repeat(Math.max(0, targetLength - hexStr.length())) + hexStr;
         }
         return hexStr.substring(0, targetLength);
+    }
+
+    /**
+     * 响应给客户端
+     *
+     * @param data  响应的数据部分
+     * @param dstIP 目的IP（消防主机IP）
+     */
+    private void responseToClient(byte[] data, String dstIP) throws Exception {
+        Thread.sleep(500);
+        new DatagramSocket().send(new java.net.DatagramPacket(data, data.length, InetAddress.getByName(dstIP), 788));
     }
 }
