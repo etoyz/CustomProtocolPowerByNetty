@@ -65,7 +65,7 @@
                 socket.onmessage = function (event) {
                     let data = JSON.parse(event.data)
                     console.log(data)
-                    updateChart(data, 5)
+                    updateChart(data, 8)
                 };
 
                 socket.onopen = function (event) {
@@ -99,7 +99,7 @@
             let alarm = [];
             let ctxL = document.getElementById("lineChart").getContext('2d');
             let myLineChart = new Chart(ctxL, {
-                type: 'line',
+                type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
@@ -112,21 +112,33 @@
                             'rgba(200, 99, 132, .7)',
                         ],
                         borderWidth: 2
-                    }, {
-                        label: "My Second dataset",
-                        data: [28, 48, 40, 19, 86, 27, 90],
-                        backgroundColor: [
-                            'rgba(0, 137, 132, .2)',
-                        ],
-                        borderColor: [
-                            'rgba(0, 10, 130, .7)',
-                        ],
-                        borderWidth: 2
-                    }
+                    },
+                        //     {
+                        //     label: "My Second dataset",
+                        //     data: [28, 48, 40, 19, 86, 27, 90],
+                        //     backgroundColor: [
+                        //         'rgba(0, 137, 132, .2)',
+                        //     ],
+                        //     borderColor: [
+                        //         'rgba(0, 10, 130, .7)',
+                        //     ],
+                        //     borderWidth: 2
+                        // }
                     ]
                 },
                 options: {
-                    responsive: true
+                    responsive: true,
+                    scales: {
+                        yAxes: [{
+                            display: true,
+                            ticks: {
+                                beginAtZero: true,
+                                steps: 10,
+                                stepValue: 5,
+                                suggestedMin: 0,
+                            }
+                        }]
+                    },
                 }
             });
 
@@ -134,16 +146,14 @@
                 labels = []
                 alarm = []
                 if (newData.length > len) {
-                    newData = newData.slice(newData[newData.length - len - 1], newData[newData.length])
+                    newData = newData.slice(newData.length - len - 1, newData.length)
                 }
                 for (let i = 0; i < newData.length; i++) {
-                    labels.push(newData[i]["requestDate"])
-                    alarm.push(newData[i]["convertedData"]['alarm'])
+                    labels.push(newData[i]["requestDate"].slice(6))
+                    alarm.push(newData[i]["convertedData"]['alarmCount'])
                 }
                 myLineChart.data.labels = labels;
                 myLineChart.data.datasets[0].data = alarm
-                // chart.update();
-                // myLineChart.options.datasets[0].data = alarm
                 myLineChart.update()
             }
         }
