@@ -30,13 +30,16 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
 
         // 将接收到的消防主机数据存储下来(待处理)
         String convertedMessage = "待处理";
+        Map<String, String> convertedData = new HashMap<>();
+        convertedData.put("alarm", "66");
         // TODO
-        FireEngineServer.receivedStatus.add(new String[]{
-                msg.sender().getHostString() + ":" + msg.sender().getPort(), // 请求者的IP和端口
-                hexStr + "H", // 接收到的数据的16进制表示
-                convertedMessage,
-                new SimpleDateFormat("MM/dd HH:mm:ss").format(new Date()) // 接收到数据的时间
-        });
+        RequestMsg requestMsg = new RequestMsg();
+        requestMsg.setIp(msg.sender().getHostString() + ":" + msg.sender().getPort());
+        requestMsg.setRawMsg(hexStr + "H");
+        requestMsg.setConvertedMsg(convertedMessage);
+        requestMsg.setRequestDate(new SimpleDateFormat("MM/dd HH:mm:ss").format(new Date()));
+        requestMsg.setConvertedData(convertedData);
+        FireEngineServer.receivedStatus.add(requestMsg);
 
 
         Map<String, String> decoderResolveResult = new HashMap<>();

@@ -1,11 +1,16 @@
 package com.example.fireengineserver.fireEngineServer;
 
+import com.example.fireengineserver.webService.WebSocketChannelSupervise;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.Map;
 
 public class FireEngineEncoder extends MessageToByteEncoder<Map<String, String>> {
@@ -37,8 +42,22 @@ public class FireEngineEncoder extends MessageToByteEncoder<Map<String, String>>
         hexStr = hexStr.substring(0, hexStr.length() - 4); // 去尾
 
         //
-
         System.out.println(hexStr);
+
+        TextWebSocketFrame tws;
+        Map<Integer, RequestMsg> responseData = new HashMap<>();
+        for (int i = 0; i < FireEngineServer.receivedStatus.size(); i++) {
+            responseData.put(i, FireEngineServer.receivedStatus.get(i));
+        }
+        try {
+            String responseSerializeStr = new ObjectMapper().writeValueAsString(
+                    FireEngineServer.receivedStatus
+            );
+            tws = new TextWebSocketFrame(responseSerializeStr);
+            WebSocketChannelSupervise.send2All(tws);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // TODO

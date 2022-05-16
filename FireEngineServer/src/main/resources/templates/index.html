@@ -8,13 +8,17 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"
+            integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
 <div class="card" id="main">
     <div class="card-header">
-        <h5 class="">消防主机上位机仪表盘</h5>
+        <h5 class="" id="state">消防主机上位机仪表盘</h5>
     </div>
     <div class="card-body">
+        <canvas id="lineChart"></canvas>
         <table id="dashboard" class="display" style="width:100%">
             <thead>
             <tr>
@@ -34,11 +38,115 @@
             searching: false,
             paging: false,
             info: false,
-            "order": [[3, "desc"] ],
+            "order": [[3, "desc"]
+            ],
+            columns: [
+                {data: 'ip'},
+                {data: 'rawMsg'},
+                {data: 'convertedMsg'},
+                {data: 'requestDate'},
+            ],
         });
         setInterval(function () {
             table.ajax.reload(null, false);
         }, 1000)
+
+        // websocket
+        {
+            var socket;
+
+            if (!window.WebSocket) {
+                window.WebSocket = window.MozWebSocket;
+            }
+
+            if (window.WebSocket) {
+                socket = new WebSocket("ws://localhost:88");
+
+                socket.onmessage = function (event) {
+                    let data = JSON.parse(event.data)
+                    console.log(data)
+                    updateChart(data, 5)
+                };
+
+                socket.onopen = function (event) {
+                    console.log("打开WebSoket 服务正常，浏览器支持WebSoket!" + "\r\n")
+                    socket.send("1326")
+                };
+
+                socket.onclose = function (event) {
+                    console.log("WebSocket 关闭" + "\r\n")
+                };
+            } else {
+                alert("您的浏览器不支持WebSocket协议！");
+            }
+
+            function send(message) {
+                if (!window.WebSocket) {
+                    return;
+                }
+                if (socket.readyState == WebSocket.OPEN) {
+                    socket.send(message);
+                } else {
+                    alert("WebSocket 连接没有建立成功！");
+                }
+            }
+        }
+
+
+        //draw
+        {
+            let labels = [];
+            let alarm = [];
+            let ctxL = document.getElementById("lineChart").getContext('2d');
+            let myLineChart = new Chart(ctxL, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "报警器",
+                        data: alarm,
+                        backgroundColor: [
+                            'rgba(105, 0, 132, .2)',
+                        ],
+                        borderColor: [
+                            'rgba(200, 99, 132, .7)',
+                        ],
+                        borderWidth: 2
+                    }, {
+                        label: "My Second dataset",
+                        data: [28, 48, 40, 19, 86, 27, 90],
+                        backgroundColor: [
+                            'rgba(0, 137, 132, .2)',
+                        ],
+                        borderColor: [
+                            'rgba(0, 10, 130, .7)',
+                        ],
+                        borderWidth: 2
+                    }
+                    ]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+
+            function updateChart(newData, len) {
+                labels = []
+                alarm = []
+                if (newData.length > len) {
+                    newData = newData.slice(newData[newData.length - len - 1], newData[newData.length])
+                }
+                for (let i = 0; i < newData.length; i++) {
+                    labels.push(newData[i]["requestDate"])
+                    alarm.push(newData[i]["convertedData"]['alarm'])
+                }
+                myLineChart.data.labels = labels;
+                myLineChart.data.datasets[0].data = alarm
+                // chart.update();
+                // myLineChart.options.datasets[0].data = alarm
+                myLineChart.update()
+            }
+        }
     })
 </script>
 </body>

@@ -11,7 +11,7 @@ import io.netty.channel.socket.nio.NioDatagramChannel;
 import java.util.ArrayList;
 
 public class FireEngineServer {
-    public static ArrayList<String[]> receivedStatus = new ArrayList<>();
+    public static ArrayList<RequestMsg> receivedStatus = new ArrayList<>();
 
     public static void startServer() {
 
