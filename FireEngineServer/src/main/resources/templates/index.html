@@ -96,35 +96,34 @@
         //draw
         {
             let labels = [];
-            let alarm = [];
+            let alarmCount = [];
+            let faultCount = [];
             let ctxL = document.getElementById("lineChart").getContext('2d');
             let myLineChart = new Chart(ctxL, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: "报警器",
-                        data: alarm,
+                        label: "报警个数",
+                        data: alarmCount,
                         backgroundColor: [
                             'rgba(105, 0, 132, .2)',
                         ],
                         borderColor: [
-                            'rgba(200, 99, 132, .7)',
+                            'rgba(255,0,80,0.7)',
                         ],
                         borderWidth: 2
-                    },
-                        //     {
-                        //     label: "My Second dataset",
-                        //     data: [28, 48, 40, 19, 86, 27, 90],
-                        //     backgroundColor: [
-                        //         'rgba(0, 137, 132, .2)',
-                        //     ],
-                        //     borderColor: [
-                        //         'rgba(0, 10, 130, .7)',
-                        //     ],
-                        //     borderWidth: 2
-                        // }
-                    ]
+                    }, {
+                        label: "故障个数",
+                        data: faultCount,
+                        backgroundColor: [
+                            'rgba(0, 137, 132, .2)',
+                        ],
+                        borderColor: [
+                            'rgba(0, 10, 130, .7)',
+                        ],
+                        borderWidth: 2
+                    }]
                 },
                 options: {
                     responsive: true,
@@ -144,16 +143,19 @@
 
             function updateChart(newData, len) {
                 labels = []
-                alarm = []
+                alarmCount = []
+                faultCount = []
                 if (newData.length > len) {
                     newData = newData.slice(newData.length - len - 1, newData.length)
                 }
                 for (let i = 0; i < newData.length; i++) {
                     labels.push(newData[i]["requestDate"].slice(6))
-                    alarm.push(newData[i]["convertedData"]['alarmCount'])
+                    alarmCount.push(newData[i]["convertedData"]['alarmCount'])
+                    faultCount.push(newData[i]["convertedData"]['faultCount'])
                 }
                 myLineChart.data.labels = labels;
-                myLineChart.data.datasets[0].data = alarm
+                myLineChart.data.datasets[0].data = alarmCount
+                myLineChart.data.datasets[1].data = faultCount
                 myLineChart.update()
             }
         }
