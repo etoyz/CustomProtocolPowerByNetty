@@ -18,7 +18,9 @@
         <h5 class="" id="state">消防主机上位机仪表盘</h5>
     </div>
     <div class="card-body">
-        <canvas id="lineChart"></canvas>
+        <div style="width: 70%;height: 50%; margin-left: auto; margin-right: auto;">
+            <canvas id="lineChart"></canvas>
+        </div>
         <table id="dashboard" class="display" style="width:100%">
             <thead>
             <tr>
@@ -100,7 +102,7 @@
             let faultCount = [];
             let ctxL = document.getElementById("lineChart").getContext('2d');
             let myLineChart = new Chart(ctxL, {
-                type: 'bar',
+                type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
@@ -128,15 +130,16 @@
                 options: {
                     responsive: true,
                     scales: {
-                        yAxes: [{
-                            display: true,
+                        y: {
+                            max: 50,
+                            min: 0,
                             ticks: {
-                                beginAtZero: true,
-                                steps: 10,
-                                stepValue: 5,
-                                suggestedMin: 0,
+                                stepSize: 1
                             }
-                        }]
+                        },
+                        // ticks: {
+                        //     precision: 0
+                        // }
                     },
                 }
             });
