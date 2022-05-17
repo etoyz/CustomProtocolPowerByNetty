@@ -8,6 +8,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -19,13 +20,19 @@ import java.util.Map;
 
 public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacket> {
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) {
+    protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws IOException {
         // 处理UDP数据报
         System.out.println("\n\n收到UDP数据报：\t" + msg.toString());
         byte[] bytes = new byte[msg.content().readableBytes()];
         msg.content().readBytes(bytes);
         String binaryCodeString = new String(bytes, StandardCharsets.UTF_8); // 表示二进制的字符串
         System.out.println("提取到数据部分：\t" + binaryCodeString);
+        if (!binaryCodeString.substring(10, 12).equals("60")) { // fake
+            byte[] t = binaryCodeString.substring(11 + 7, binaryCodeString.length() - 4).getBytes();
+            new ObjectMapper().readerFor(Map.class).readTree(t);
+            new ObjectMapper().readerFor(Map.class).readTree(t).get("isValid");
+            System.out.printf(binaryCodeString);
+        }
 
         // 将表示二进制的字符串转为原始二进制数字
         BigInteger binaryCode = new BigInteger(binaryCodeString, 2);

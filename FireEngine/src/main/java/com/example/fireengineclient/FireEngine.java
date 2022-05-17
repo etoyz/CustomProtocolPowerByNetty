@@ -1,10 +1,13 @@
 package com.example.fireengineclient;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
@@ -15,30 +18,36 @@ public class FireEngine {
     // 自定义构造方法，初始化消防主机
     public FireEngine(Map<String, String> map) {
         setFunctionCode(map.get("functionCode"));
-        setIsReadSuccess(map.get("isReadSuccess"));
-//        fireEngine.dataFormat = map.get("dataFormat");
-        setCount(getHexStrFromMap(map, "count"));
-        setAlarmCount(getHexStrFromMap(map, "alarmCount"));
-        setFaultCount(getHexStrFromMap(map, "faultCount"));
-        setDetectorCount(getHexStrFromMap(map, "detectorCount"));
-        setIsValid(map.get("isValid"));
+        if (map.get("functionCode").equals(FUN_SYSTEM_INFO)) { // 如果是系统消息，走原来的逻辑
+            setIsReadSuccess(map.get("isReadSuccess"));
+            setCount(getHexStrFromMap(map, "count"));
+            setAlarmCount(getHexStrFromMap(map, "alarmCount"));
+            setFaultCount(getHexStrFromMap(map, "faultCount"));
+            setDetectorCount(getHexStrFromMap(map, "detectorCount"));
+            setIsValid(map.get("isValid"));
+        } else // 如果不是系统消息，则偷懒（￣︶￣）↗　
+            setOtherData(map);
     }
 
     // 向控制台输出信息
     public void printLog() {
-        String statusCodeString = getHexStatusCodeString().toUpperCase(Locale.ROOT);
-        String statusCodeStringAll = addHeadAndTail(statusCodeString).toUpperCase(Locale.ROOT);
-        BigInteger statusCodeBinaryAll = new BigInteger(statusCodeStringAll, 16);
-        System.out.println("\n\n模拟消费主机...");
-        System.out.println("生成部分报文内容：\t\t" + statusCodeString + "H");
-        System.out.println("生成全部报文数据：\t\t" + statusCodeStringAll + "H");
-        System.out.println("十进制表示：\t\t\t" + statusCodeBinaryAll.toString(10));
-        System.out.println("上传二进制串到工控主机：\t" + statusCodeBinaryAll.toString(2));
+        if (functionCode.equals(FUN_SYSTEM_INFO)) {
+            String statusCodeString = getHexStatusCodeString().toUpperCase(Locale.ROOT);
+            String statusCodeStringAll = addHeadAndTail(statusCodeString).toUpperCase(Locale.ROOT);
+            BigInteger statusCodeBinaryAll = new BigInteger(statusCodeStringAll, 16);
+            System.out.println("\n\n模拟消费主机...");
+            System.out.println("生成部分报文内容：\t\t" + statusCodeString + "H");
+            System.out.println("生成全部报文数据：\t\t" + statusCodeStringAll + "H");
+            System.out.println("十进制表示：\t\t\t" + statusCodeBinaryAll.toString(10));
+            System.out.println("上传二进制串到工控主机：\t" + statusCodeBinaryAll.toString(2));
+        } else
+            System.out.println("暂时只支持”系统消息”日志输出“");
     }
 
     // 上传数据到特定主机
     public void sendToServer(String ipStr) throws Exception {
         BigInteger binaryCode = new BigInteger(addHeadAndTail(getHexStatusCodeString()), 16);
+        int dstPort = 688;
 
         // Step 1:Create the socket object for
         // carrying the data.
@@ -57,11 +66,17 @@ public class FireEngine {
         // Step 2 : Create the datagramPacket for sending
         // the data.
         DatagramPacket DpSend =
-                new DatagramPacket(buf, buf.length, ip, 688);
+                new DatagramPacket(buf, buf.length, ip, dstPort);
 
         // Step 3 : invoke the send call to actually send
         // the data.
-        ds.send(DpSend);
+        if (functionCode.equals(FUN_SYSTEM_INFO)) // 如果是系统消息，走原来的逻辑
+            ds.send(DpSend);
+        else { // 如果不是系统消息，则偷懒（￣︶￣）↗　
+            byte[] fakeData = new ObjectMapper().writeValueAsBytes(otherData);
+            byte[] fakeDataWithHeadAndTail = addHeadAndTail(getHexStatusCodeString() + Arrays.toString(fakeData)).getBytes();
+            ds.send(new DatagramPacket(fakeData, fakeData.length, ip, dstPort));
+        }
     }
 
 
@@ -114,15 +129,15 @@ public class FireEngine {
         return "";
     }
 
-    private String addHeadAndTail(String statusCode) {
-        int length = 2 + 2 + 1 + statusCode.length() / 2 + 1 + 1; // 长度单位是字节
+    private String addHeadAndTail(String data) {
+        int length = 2 + 2 + 1 + data.length() / 2 + 1 + 1; // 长度单位是字节
         int id = (new Random()).nextInt((int) Math.pow(2, 8));
         String crc = "00"; // TODO
         if (!"on".equals(isValid)) // 如果数据受损
             crc = "01";
         return "514E" + fixHexStr(Integer.toHexString(length), 4)
                 + fixHexStr(Integer.toHexString(id), 2)
-                + statusCode + crc + "45";
+                + data + crc + "45";
     }
 
     private String getHexStrFromMap(Map<String, String> map, String key) {
@@ -169,6 +184,10 @@ public class FireEngine {
      * 总探测器个数
      */
     private String detectorCount;
+    /**
+     * 其它数据
+     */
+    private Map<String, String> otherData;
 
     /**
      * 各类功能码
@@ -218,5 +237,13 @@ public class FireEngine {
 
     public void setIsValid(String isValid) {
         this.isValid = isValid;
+    }
+
+    public Map<String, String> getOtherData() {
+        return otherData;
+    }
+
+    public void setOtherData(Map<String, String> otherData) {
+        this.otherData = otherData;
     }
 }
