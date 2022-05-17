@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
+import java.math.BigInteger;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Map;
@@ -15,8 +16,7 @@ public class FireEngineEncoder extends MessageToByteEncoder<Map<String, String>>
         String ip = map.get("CLIENT_IP");
         String responseString; //上位机回复给消防主机的数据
         // CRC校验
-        String crc = hexStr.substring(hexStr.length() - 4, hexStr.length() - 2);
-        if (!verifyCRC(hexStr, crc)) { // 若校验失败
+        if (!verifyCRC(getCRC(hexStr))) { // 若校验失败
 //            String ID = hexStr.substring(8, 10);
 //            int len = 10;
 //            String resCrc = "00";
@@ -28,7 +28,7 @@ public class FireEngineEncoder extends MessageToByteEncoder<Map<String, String>>
             responseToClient(responseString.getBytes(), ip);
             return;
         } else {
-            responseString = "服务不支持"; // TODO
+            responseString = "CRC校验成功"; // TODO
             responseToClient(responseString.getBytes(), ip);
         }
 
@@ -36,13 +36,34 @@ public class FireEngineEncoder extends MessageToByteEncoder<Map<String, String>>
         hexStr = hexStr.substring(8); // 去头
         hexStr = hexStr.substring(0, hexStr.length() - 4); // 去尾
 
-        //
         System.out.println(hexStr);
     }
 
-    // TODO
-    private boolean verifyCRC(String msg, String crc) {
-        return crc.equals("00");
+    // CRC校验
+    private String getCRC(String hexStr) {
+        String hexstr = hexStr.substring(0,hexStr.length()-3);
+        String mult = "101";//多项式
+        BigInteger datadec = new BigInteger(hexstr,16);//CRC16转10
+        BigInteger multdec = new BigInteger(mult,16);//多项式16转10
+        BigInteger remainder = datadec.remainder(multdec);
+        int multint = remainder.intValue();
+        String multhex = Integer.toHexString(multint);
+        String datastr = hexstr+multhex+"45H";
+        System.out.println("CRC校验位为:\t"+multhex);
+        return datastr;
+    }
+
+    //判断CRC是否校验成功
+    private boolean verifyCRC(String datacrc){
+        String hexstr = datacrc.substring(0,datacrc.length()-3);
+        String mult = "101";//多项式
+        BigInteger datadec = new BigInteger(hexstr,16);//CRC16转10
+        BigInteger multdec = new BigInteger(mult,16);//多项式16转10
+        BigInteger remainder = datadec.remainder(multdec);
+        int multint = remainder.intValue();
+        String Hexstr = datacrc.substring(0,datacrc.length()-5);
+        String multhex = Integer.toHexString(multint);
+        return multhex.equals("0");
     }
 
     private String fixHexStr(String hexStr, int targetLength) {
