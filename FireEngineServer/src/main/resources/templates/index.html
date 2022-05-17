@@ -8,13 +8,21 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"
+            integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
 <div class="card" id="main">
     <div class="card-header">
-        <h5 class="">消防主机上位机仪表盘</h5>
+        <h5 class="" id="state">消防主机上位机仪表盘
+            <button id="clear" class="btn-danger" style="float: right">清空数据</button>
+        </h5>
     </div>
     <div class="card-body">
+        <div style="width: 70%;height: 50%; margin-left: auto; margin-right: auto;">
+            <canvas id="lineChart"></canvas>
+        </div>
         <table id="dashboard" class="display" style="width:100%">
             <thead>
             <tr>
@@ -34,11 +42,137 @@
             searching: false,
             paging: false,
             info: false,
-            "order": [[3, "desc"] ],
+            "order": [[3, "desc"]
+            ],
+            columns: [
+                {data: 'ip'},
+                {data: 'rawMsg'},
+                {data: 'convertedMsg'},
+                {data: 'requestDate'},
+            ],
         });
-        setInterval(function () {
-            table.ajax.reload(null, false);
-        }, 1000)
+
+        $("#clear").click(function () {
+            $.post({
+                url: "clearData",
+                success: function (res) {
+                    if (res == "ok") {
+                        updateChart([], 8)
+                        table.ajax.reload(null, false);
+                    }
+                }
+            })
+        })
+
+        // websocket
+        {
+            var socket;
+
+            if (!window.WebSocket) {
+                window.WebSocket = window.MozWebSocket;
+            }
+
+            if (window.WebSocket) {
+                socket = new WebSocket("ws://localhost:88");
+
+                socket.onmessage = function (event) {
+                    let data = JSON.parse(event.data)
+                    console.log(data)
+                    updateChart(data, 8)
+                    table.ajax.reload(null, false);
+                };
+
+                socket.onopen = function (event) {
+                    console.log("打开WebSoket 服务正常，浏览器支持WebSoket!" + "\r\n")
+                    socket.send("1326")
+                };
+
+                socket.onclose = function (event) {
+                    console.log("WebSocket 关闭" + "\r\n")
+                };
+            } else {
+                alert("您的浏览器不支持WebSocket协议！");
+            }
+
+            function send(message) {
+                if (!window.WebSocket) {
+                    return;
+                }
+                if (socket.readyState == WebSocket.OPEN) {
+                    socket.send(message);
+                } else {
+                    alert("WebSocket 连接没有建立成功！");
+                }
+            }
+        }
+
+        //draw
+        {
+            let labels = [];
+            let alarmCount = [];
+            let faultCount = [];
+            let ctxL = document.getElementById("lineChart").getContext('2d');
+            let myLineChart = new Chart(ctxL, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "报警个数",
+                        data: alarmCount,
+                        backgroundColor: [
+                            'rgba(105, 0, 132, .2)',
+                        ],
+                        borderColor: [
+                            'rgba(255,0,80,0.7)',
+                        ],
+                        borderWidth: 2
+                    }, {
+                        label: "故障个数",
+                        data: faultCount,
+                        backgroundColor: [
+                            'rgba(0, 137, 132, .2)',
+                        ],
+                        borderColor: [
+                            'rgba(0, 10, 130, .7)',
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            max: 50,
+                            min: 0,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        },
+                        // ticks: {
+                        //     precision: 0
+                        // }
+                    },
+                }
+            });
+
+            function updateChart(newData, len) {
+                labels = []
+                alarmCount = []
+                faultCount = []
+                if (newData.length > len) {
+                    newData = newData.slice(newData.length - len - 1, newData.length)
+                }
+                for (let i = 0; i < newData.length; i++) {
+                    labels.push(newData[i]["requestDate"].slice(6))
+                    alarmCount.push(newData[i]["convertedData"]['alarmCount'])
+                    faultCount.push(newData[i]["convertedData"]['faultCount'])
+                }
+                myLineChart.data.labels = labels;
+                myLineChart.data.datasets[0].data = alarmCount
+                myLineChart.data.datasets[1].data = faultCount
+                myLineChart.update()
+            }
+        }
     })
 </script>
 </body>
