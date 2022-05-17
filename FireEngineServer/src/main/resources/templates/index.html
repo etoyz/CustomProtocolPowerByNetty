@@ -49,9 +49,6 @@
                 {data: 'requestDate'},
             ],
         });
-        setInterval(function () {
-            table.ajax.reload(null, false);
-        }, 1000)
 
         // websocket
         {
@@ -68,6 +65,7 @@
                     let data = JSON.parse(event.data)
                     console.log(data)
                     updateChart(data, 8)
+                    table.ajax.reload(null, false);
                 };
 
                 socket.onopen = function (event) {
@@ -93,7 +91,6 @@
                 }
             }
         }
-
 
         //draw
         {
