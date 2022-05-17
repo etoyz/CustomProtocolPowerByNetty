@@ -23,5 +23,10 @@ public class WebServices {
         return map;
     }
 
+    @RequestMapping("clearData")
+    public String clearData() {
+        FireEngineServer.receivedStatus.clear();
+        return "ok";
+    }
 }
 
