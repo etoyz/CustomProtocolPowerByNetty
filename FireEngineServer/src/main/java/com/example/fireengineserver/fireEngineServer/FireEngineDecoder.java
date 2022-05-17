@@ -3,6 +3,7 @@ package com.example.fireengineserver.fireEngineServer;
 import com.example.fireengineserver.webService.WebSocketChannelSupervise;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
@@ -23,60 +24,74 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
         System.out.println("\n\n收到UDP数据报：\t" + msg.toString());
         byte[] bytes = new byte[msg.content().readableBytes()];
         msg.content().readBytes(bytes);
-        String hexStr = new ObjectMapper().readerFor(String.class).readValue(bytes); //decode
-
-        // 将表示二进制的字符串转为原始二进制数字
-        BigInteger dataCarriedByInt = new BigInteger(hexStr, 16);
-        System.out.println("收到二进制数据：\t\t" + dataCarriedByInt.toString(2) + "B");
-        System.out.println("十六进制表示：\t\t" + hexStr + "H");
-
-        // 处理接收到的消防主机数据
-        String convertedMessage = "待处理"; // convertedMessage
-        int intnum1 = 0;
-        int intnum2 = 0;
-        int intnum3 = 0;
-        if (hexStr.substring(10, 12).equals("60")) {
-            if (hexStr.substring(12, 14).equals("00")) {
-                String strnum1 = hexStr.substring(18, 22);
-                intnum1 = Integer.parseInt(strnum1, 16);
-                String strnum2 = hexStr.substring(22, 26);
-                intnum2 = Integer.parseInt(strnum2, 16);
-                String strnum3 = hexStr.substring(26, 30);
-                intnum3 = Integer.parseInt(strnum3, 16);
-                convertedMessage = "系统信息：总报警个数" + intnum1 + "  " + "总故障个数" + intnum2 + "  " + "总探测器个数" + intnum3;
-            } else {
-                convertedMessage = "读取失败！";
-            }
-        } else {
-            convertedMessage = "暂不支持";
-        }
-        Map<String, Integer> convertedData = new HashMap<>(); // convertedData
-        convertedData.put("alarmCount", intnum1);
-        convertedData.put("faultCount", intnum2);
-        convertedData.put("detectorCount", intnum3);
-        RequestMsg requestMsg = new RequestMsg(); // aggregation
-        requestMsg.setIp(msg.sender().getHostString() + ":" + msg.sender().getPort());
-        requestMsg.setRawMsg(hexStr + "H");
-        requestMsg.setConvertedMsg(convertedMessage);
-        requestMsg.setRequestDate(new SimpleDateFormat("MM/dd HH:mm:ss").format(new Date()));
-        requestMsg.setConvertedData(convertedData);
-        FireEngineServer.receivedStatus.add(requestMsg);
-        // 使用WebSocket 更新服务器的dashboard
-        TextWebSocketFrame tws;
-        Map<Integer, RequestMsg> responseData = new HashMap<>();
-        for (int i = 0; i < FireEngineServer.receivedStatus.size(); i++) {
-            responseData.put(i, FireEngineServer.receivedStatus.get(i));
-        }
+        String hexStr;
         try {
-            String responseSerializeStr = new ObjectMapper().writeValueAsString(
-                    FireEngineServer.receivedStatus
-            );
-            tws = new TextWebSocketFrame(responseSerializeStr);
-            WebSocketChannelSupervise.send2All(tws);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+            hexStr = new ObjectMapper().readerFor(String.class).readValue(bytes); //decode
 
+            // 将表示二进制的字符串转为原始二进制数字
+            BigInteger dataCarriedByInt = new BigInteger(hexStr, 16);
+            System.out.println("二进制表示：\t\t" + dataCarriedByInt.toString(2) + "B");
+            System.out.println("十六进制表示：\t\t" + hexStr + "H");
+
+            // 处理接收到的消防主机数据
+            String convertedMessage = "待处理"; // convertedMessage
+            int intnum1 = 0;
+            int intnum2 = 0;
+            int intnum3 = 0;
+            if (hexStr.substring(10, 12).equals("60")) {
+                if (hexStr.substring(12, 14).equals("00")) {
+                    String strnum1 = hexStr.substring(18, 22);
+                    intnum1 = Integer.parseInt(strnum1, 16);
+                    String strnum2 = hexStr.substring(22, 26);
+                    intnum2 = Integer.parseInt(strnum2, 16);
+                    String strnum3 = hexStr.substring(26, 30);
+                    intnum3 = Integer.parseInt(strnum3, 16);
+                    convertedMessage = "系统信息：总报警个数" + intnum1 + "  " + "总故障个数" + intnum2 + "  " + "总探测器个数" + intnum3;
+                } else {
+                    convertedMessage = "读取失败！";
+                }
+            } else {
+                convertedMessage = "暂不支持";
+            }
+            Map<String, Integer> convertedData = new HashMap<>(); // convertedData
+            convertedData.put("alarmCount", intnum1);
+            convertedData.put("faultCount", intnum2);
+            convertedData.put("detectorCount", intnum3);
+            RequestMsg requestMsg = new RequestMsg(); // aggregation
+            requestMsg.setIp(msg.sender().getHostString() + ":" + msg.sender().getPort());
+            requestMsg.setRawMsg(hexStr + "H");
+            requestMsg.setConvertedMsg(convertedMessage);
+            requestMsg.setRequestDate(new SimpleDateFormat("MM/dd HH:mm:ss").format(new Date()));
+            requestMsg.setConvertedData(convertedData);
+            FireEngineServer.receivedStatus.add(requestMsg);
+            // 使用WebSocket 更新服务器的dashboard(图表)
+            TextWebSocketFrame tws;
+            Map<Integer, RequestMsg> responseData = new HashMap<>();
+            for (int i = 0; i < FireEngineServer.receivedStatus.size(); i++) {
+                responseData.put(i, FireEngineServer.receivedStatus.get(i));
+            }
+            try {
+                String responseSerializeStr = new ObjectMapper().writeValueAsString(
+                        FireEngineServer.receivedStatus
+                );
+                tws = new TextWebSocketFrame(responseSerializeStr);
+                WebSocketChannelSupervise.send2All(tws);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+
+
+        } catch (MismatchedInputException e) {  //如果不是系统消息，则偷懒（￣︶￣）↗　
+            RequestMsg requestMsg = new RequestMsg();
+            Map<String, String> fakeData = new ObjectMapper().readerFor(Map.class).readValue(bytes); //decode
+            hexStr = "00000000000";
+            requestMsg.setIp(msg.sender().getHostString() + ":" + msg.sender().getPort());
+            requestMsg.setRawMsg(hexStr);
+            requestMsg.setConvertedMsg("待转换");
+            requestMsg.setRequestDate(new SimpleDateFormat("MM/dd HH:mm:ss").format(new Date()));
+
+            FireEngineServer.receivedStatus.add(requestMsg);
+        }
 
         Map<String, String> decoderResolveResult = new HashMap<>();
         decoderResolveResult.put("CLIENT_IP", msg.sender().getHostString());
