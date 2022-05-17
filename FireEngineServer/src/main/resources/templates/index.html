@@ -162,10 +162,10 @@
                 if (newData.length > len) {
                     newData = newData.slice(newData.length - len - 1, newData.length)
                 }
-                for (let i = 0; i < newData.length; i++) {
-                    labels.push(newData[i]["requestDate"].slice(6))
-                    alarmCount.push(newData[i]["convertedData"]['alarmCount'])
-                    faultCount.push(newData[i]["convertedData"]['faultCount'])
+                for(let k in newData){
+                    labels.push(newData[k]["requestDate"].slice(6))
+                    alarmCount.push(newData[k]["convertedData"]['alarmCount'])
+                    faultCount.push(newData[k]["convertedData"]['faultCount'])
                 }
                 myLineChart.data.labels = labels;
                 myLineChart.data.datasets[0].data = alarmCount

@@ -68,11 +68,12 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
             TextWebSocketFrame tws;
             Map<Integer, RequestMsg> responseData = new HashMap<>();
             for (int i = 0; i < FireEngineServer.receivedStatus.size(); i++) {
-                responseData.put(i, FireEngineServer.receivedStatus.get(i));
+                if (FireEngineServer.receivedStatus.get(i).getConvertedData() != null)
+                    responseData.put(i, FireEngineServer.receivedStatus.get(i));
             }
             try {
                 String responseSerializeStr = new ObjectMapper().writeValueAsString(
-                        FireEngineServer.receivedStatus
+                        responseData
                 );
                 tws = new TextWebSocketFrame(responseSerializeStr);
                 WebSocketChannelSupervise.send2All(tws);
