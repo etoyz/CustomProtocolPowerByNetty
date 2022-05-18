@@ -12,9 +12,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
 public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacket> {
@@ -66,10 +64,10 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
             FireEngineServer.receivedStatus.add(requestMsg);
             // 使用WebSocket 更新服务器的dashboard(图表)
             TextWebSocketFrame tws;
-            Map<Integer, RequestMsg> responseData = new HashMap<>();
+            List<RequestMsg> responseData = new ArrayList<>();
             for (int i = 0; i < FireEngineServer.receivedStatus.size(); i++) {
                 if (FireEngineServer.receivedStatus.get(i).getConvertedData() != null)
-                    responseData.put(i, FireEngineServer.receivedStatus.get(i));
+                    responseData.add(FireEngineServer.receivedStatus.get(i));
             }
             try {
                 String responseSerializeStr = new ObjectMapper().writeValueAsString(
