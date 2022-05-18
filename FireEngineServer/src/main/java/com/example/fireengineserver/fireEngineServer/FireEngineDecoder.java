@@ -66,12 +66,23 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
             requestMsg.setConvertedData(convertedData);
             FireEngineServer.receivedStatus.add(requestMsg);
         } catch (MismatchedInputException e) {  //如果不是系统消息，则偷懒（￣︶￣）↗　
-            requestMsg = new RequestMsg();
             Map<String, String> fakeData = new ObjectMapper().readerFor(Map.class).readValue(bytes); //decode
-            hexStr = "00000000000";
+            String convertedMsg = null;
+            String functionCode = fakeData.get("functionCode");
+            if (functionCode.equals("70")) {
+                convertedMsg = "暂不支持";
+            } else if (functionCode.equals("80")) {
+                convertedMsg = "分区信息:";
+            } else if (functionCode.equals("90")) {
+                convertedMsg = "探测器信息:";
+            } else if (functionCode.equals("A0")) {
+                convertedMsg = "灭火器信息:";
+            }
+            hexStr = "00000000000"; // TODO
+            requestMsg = new RequestMsg();
             requestMsg.setIp(msg.sender().getHostString() + ":" + msg.sender().getPort());
             requestMsg.setRawMsg(hexStr);
-            requestMsg.setConvertedMsg("待转换");
+            requestMsg.setConvertedMsg(convertedMsg);
             requestMsg.setRequestDate(new SimpleDateFormat("MM/dd HH:mm:ss").format(new Date()));
 
             FireEngineServer.receivedStatus.add(requestMsg);
