@@ -107,18 +107,15 @@ public class FireEngine {
 
     private String addHeadAndTail(String data) {
         int length = 2 + 2 + 1 + data.length() / 2 + 1 + 1; // 长度单位是字节
-        String crc = "00"; // TODO
-        if (!"on".equals(isValid)) // 如果数据受损
-            crc = "01";
         String resultStr = "514E" + fixHexStr(Integer.toHexString(length), 4)
                 + fixHexStr(Integer.toHexString(id), 2)
                 + data;
         resultStr += getCRC(resultStr);
         resultStr += "45";
+        if (!"on".equals(isValid)) { // 模拟数据受损(演示CRC校验功能)
+            resultStr = resultStr.substring(1);
+        }
         return resultStr;
-//        return "514E" + fixHexStr(Integer.toHexString(length), 4)
-//                + fixHexStr(Integer.toHexString(id), 2)
-//                + data + crc + "45";
     }
 
     private String getCRC(String hexStr) {
