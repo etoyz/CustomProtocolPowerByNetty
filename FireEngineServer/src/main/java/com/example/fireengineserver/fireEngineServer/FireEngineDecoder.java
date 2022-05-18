@@ -64,7 +64,7 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
             requestMsg.setConvertedMsg(convertedMessage);
             requestMsg.setRequestDate(new SimpleDateFormat("MM/dd HH:mm:ss").format(new Date()));
             requestMsg.setConvertedData(convertedData);
-            FireEngineServer.receivedStatus.add(requestMsg);
+            FireEngineServer.receivedData.add(requestMsg);
         } catch (MismatchedInputException e) {  //如果不是系统消息，则偷懒（￣︶￣）↗　
             Map<String, String> fakeData = new ObjectMapper().readerFor(Map.class).readValue(bytes); //decode
             String convertedMsg = null;
@@ -85,7 +85,7 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
             requestMsg.setConvertedMsg(convertedMsg);
             requestMsg.setRequestDate(new SimpleDateFormat("MM/dd HH:mm:ss").format(new Date()));
 
-            FireEngineServer.receivedStatus.add(requestMsg);
+            FireEngineServer.receivedData.add(requestMsg);
         }
         logBuilder.append(requestMsg.getConvertedMsg()).append("\n");
         // 写入日志
@@ -94,9 +94,9 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
         // 使用WebSocket 动态更新服务器的dashboard(图表)
         TextWebSocketFrame tws;
         List<RequestMsg> responseData = new ArrayList<>();
-        for (int i = 0; i < FireEngineServer.receivedStatus.size(); i++) {
-            if (FireEngineServer.receivedStatus.get(i).getConvertedData() != null)
-                responseData.add(FireEngineServer.receivedStatus.get(i));
+        for (int i = 0; i < FireEngineServer.receivedData.size(); i++) {
+            if (FireEngineServer.receivedData.get(i).getConvertedData() != null)
+                responseData.add(FireEngineServer.receivedData.get(i));
         }
         try {
             String responseSerializeStr = new ObjectMapper().writeValueAsString(

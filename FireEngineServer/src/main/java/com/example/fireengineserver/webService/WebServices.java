@@ -22,13 +22,13 @@ public class WebServices {
 
 //        ArrayList<String[]> dataList = new ArrayList<>(FireEngineServer.receivedStatus);
 
-        map.put("data", FireEngineServer.receivedStatus);
+        map.put("data", FireEngineServer.receivedData);
         return map;
     }
 
     @RequestMapping("clearData")
     public String clearData() {
-        FireEngineServer.receivedStatus.clear();
+        FireEngineServer.receivedData.clear();
         return "ok";
     }
 

@@ -77,12 +77,12 @@ public class WebSocketHandler extends ChannelInboundHandlerAdapter {
         String request = ((TextWebSocketFrame) frame).text();
         TextWebSocketFrame tws = null;
         Map<Integer, RequestMsg> responseData = new HashMap<>();
-        for (int i = 0; i < FireEngineServer.receivedStatus.size(); i++) {
-            responseData.put(i, FireEngineServer.receivedStatus.get(i));
+        for (int i = 0; i < FireEngineServer.receivedData.size(); i++) {
+            responseData.put(i, FireEngineServer.receivedData.get(i));
         }
         try {
             String responseSerializeStr = new ObjectMapper().writeValueAsString(
-                    FireEngineServer.receivedStatus
+                    FireEngineServer.receivedData
             );
             tws = new TextWebSocketFrame(responseSerializeStr);
         } catch (JsonProcessingException e) {

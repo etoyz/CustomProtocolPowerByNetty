@@ -2,6 +2,9 @@ package com.example.fireengineserver.fireEngineServer;
 
 import java.util.Map;
 
+/**
+ * 客户端主动上传的信息类
+ */
 public class RequestMsg {
     private String ip;
     private String rawMsg;
