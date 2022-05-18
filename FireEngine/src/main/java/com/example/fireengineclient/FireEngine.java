@@ -25,6 +25,7 @@ public class FireEngine {
             setIsValid(map.get("isValid"));
         } else // 如果不是系统消息，则偷懒（￣︶￣）↗　
             setOtherData(map);
+        id = (new Random()).nextInt((int) Math.pow(2, 8));
     }
 
     // 向控制台输出信息
@@ -106,13 +107,30 @@ public class FireEngine {
 
     private String addHeadAndTail(String data) {
         int length = 2 + 2 + 1 + data.length() / 2 + 1 + 1; // 长度单位是字节
-        int id = (new Random()).nextInt((int) Math.pow(2, 8));
         String crc = "00"; // TODO
         if (!"on".equals(isValid)) // 如果数据受损
             crc = "01";
-        return "514E" + fixHexStr(Integer.toHexString(length), 4)
+        String resultStr = "514E" + fixHexStr(Integer.toHexString(length), 4)
                 + fixHexStr(Integer.toHexString(id), 2)
-                + data + crc + "45";
+                + data;
+        resultStr += getCRC(resultStr);
+        resultStr += "45";
+        return resultStr;
+//        return "514E" + fixHexStr(Integer.toHexString(length), 4)
+//                + fixHexStr(Integer.toHexString(id), 2)
+//                + data + crc + "45";
+    }
+
+    private String getCRC(String hexStr) {
+        String mult = "101";//多项式
+        BigInteger datadec = new BigInteger(hexStr, 16);//CRC16转10
+        BigInteger multdec = new BigInteger(mult, 16);//多项式16转10
+        BigInteger remainder = datadec.remainder(multdec);
+        int multint = remainder.intValue();
+        String multhex = Integer.toHexString(multint);
+        String datastr = hexStr + multhex + "45H";
+        System.out.println("CRC校验位为:\t" + multhex);
+        return multhex;
     }
 
     private String getHexStrFromMap(Map<String, String> map, String key) {
@@ -127,6 +145,10 @@ public class FireEngine {
         FireEngine.currentStatus = status;
     }
 
+    /**
+     * ID
+     */
+    private int id;
     /**
      * 是否有效的数据
      */

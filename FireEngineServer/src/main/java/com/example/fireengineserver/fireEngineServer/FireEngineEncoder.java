@@ -16,7 +16,7 @@ public class FireEngineEncoder extends MessageToByteEncoder<Map<String, String>>
         String ip = map.get("CLIENT_IP");
         String responseString; //上位机回复给消防主机的数据
         // CRC校验
-        if (!verifyCRC(getCRC(hexStr))) { // 若校验失败
+        if (!verifyCRC(hexStr)) { // 若校验失败
 //            String ID = hexStr.substring(8, 10);
 //            int len = 10;
 //            String resCrc = "00";
@@ -55,7 +55,7 @@ public class FireEngineEncoder extends MessageToByteEncoder<Map<String, String>>
 
     //判断CRC是否校验成功
     private boolean verifyCRC(String datacrc){
-        String hexstr = datacrc.substring(0,datacrc.length()-3);
+        String hexstr = datacrc.substring(0,datacrc.length()-2);
         String mult = "101";//多项式
         BigInteger datadec = new BigInteger(hexstr,16);//CRC16转10
         BigInteger multdec = new BigInteger(mult,16);//多项式16转10
