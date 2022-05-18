@@ -1,5 +1,6 @@
 package com.example.fireengineserver.fireEngineServer;
 
+import com.example.fireengineserver.LogUtils;
 import com.example.fireengineserver.webService.WebSocketChannelSupervise;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,18 +19,20 @@ import java.util.*;
 public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacket> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws IOException {
+        StringBuilder logBuilder = new StringBuilder();
         // 处理UDP数据报
-        System.out.println("\n\n收到UDP数据报：\t" + msg.toString());
+        logBuilder.append("收到UDP数据报：").append(msg.toString()).append("\n");
         byte[] bytes = new byte[msg.content().readableBytes()];
         msg.content().readBytes(bytes);
         String hexStr;
+        RequestMsg requestMsg;
         try {
             hexStr = new ObjectMapper().readerFor(String.class).readValue(bytes); //decode
 
             // 将表示二进制的字符串转为原始二进制数字
             BigInteger dataCarriedByInt = new BigInteger(hexStr, 16);
-            System.out.println("二进制表示：\t\t" + dataCarriedByInt.toString(2) + "B");
-            System.out.println("十六进制表示：\t\t" + hexStr + "H");
+            logBuilder.append("二进制表示：\t\t").append(dataCarriedByInt.toString(2)).append("B").append("\n");
+            logBuilder.append("十六进制表示：\t\t").append(hexStr).append("H").append("\n");
 
             // 处理接收到的消防主机数据
             String convertedMessage = "待处理"; // convertedMessage
@@ -55,7 +58,7 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
             convertedData.put("alarmCount", intnum1);
             convertedData.put("faultCount", intnum2);
             convertedData.put("detectorCount", intnum3);
-            RequestMsg requestMsg = new RequestMsg(); // aggregation
+            requestMsg = new RequestMsg(); // aggregation
             requestMsg.setIp(msg.sender().getHostString() + ":" + msg.sender().getPort());
             requestMsg.setRawMsg(hexStr + "H");
             requestMsg.setConvertedMsg(convertedMessage);
@@ -81,7 +84,7 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
 
 
         } catch (MismatchedInputException e) {  //如果不是系统消息，则偷懒（￣︶￣）↗　
-            RequestMsg requestMsg = new RequestMsg();
+            requestMsg = new RequestMsg();
             Map<String, String> fakeData = new ObjectMapper().readerFor(Map.class).readValue(bytes); //decode
             hexStr = "00000000000";
             requestMsg.setIp(msg.sender().getHostString() + ":" + msg.sender().getPort());
@@ -91,6 +94,8 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
 
             FireEngineServer.receivedStatus.add(requestMsg);
         }
+        logBuilder.append(requestMsg.getConvertedMsg()).append("\n");
+        LogUtils.info(logBuilder.toString());
 
         Map<String, String> decoderResolveResult = new HashMap<>();
         decoderResolveResult.put("CLIENT_IP", msg.sender().getHostString());
