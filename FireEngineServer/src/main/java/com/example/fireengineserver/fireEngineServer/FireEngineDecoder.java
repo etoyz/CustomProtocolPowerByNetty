@@ -65,24 +65,6 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
             requestMsg.setRequestDate(new SimpleDateFormat("MM/dd HH:mm:ss").format(new Date()));
             requestMsg.setConvertedData(convertedData);
             FireEngineServer.receivedStatus.add(requestMsg);
-            // 使用WebSocket 更新服务器的dashboard(图表)
-            TextWebSocketFrame tws;
-            List<RequestMsg> responseData = new ArrayList<>();
-            for (int i = 0; i < FireEngineServer.receivedStatus.size(); i++) {
-                if (FireEngineServer.receivedStatus.get(i).getConvertedData() != null)
-                    responseData.add(FireEngineServer.receivedStatus.get(i));
-            }
-            try {
-                String responseSerializeStr = new ObjectMapper().writeValueAsString(
-                        responseData
-                );
-                tws = new TextWebSocketFrame(responseSerializeStr);
-                WebSocketChannelSupervise.send2All(tws);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-
-
         } catch (MismatchedInputException e) {  //如果不是系统消息，则偷懒（￣︶￣）↗　
             requestMsg = new RequestMsg();
             Map<String, String> fakeData = new ObjectMapper().readerFor(Map.class).readValue(bytes); //decode
@@ -95,8 +77,27 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
             FireEngineServer.receivedStatus.add(requestMsg);
         }
         logBuilder.append(requestMsg.getConvertedMsg()).append("\n");
+        // 写入日志
         LogUtils.info(logBuilder.toString());
 
+        // 使用WebSocket 动态更新服务器的dashboard(图表)
+        TextWebSocketFrame tws;
+        List<RequestMsg> responseData = new ArrayList<>();
+        for (int i = 0; i < FireEngineServer.receivedStatus.size(); i++) {
+            if (FireEngineServer.receivedStatus.get(i).getConvertedData() != null)
+                responseData.add(FireEngineServer.receivedStatus.get(i));
+        }
+        try {
+            String responseSerializeStr = new ObjectMapper().writeValueAsString(
+                    responseData
+            );
+            tws = new TextWebSocketFrame(responseSerializeStr);
+            WebSocketChannelSupervise.send2All(tws);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        // 传到下一个Handler
         Map<String, String> decoderResolveResult = new HashMap<>();
         decoderResolveResult.put("CLIENT_IP", msg.sender().getHostString());
         decoderResolveResult.put("CLIENT_PORT", String.valueOf(msg.sender().getPort()));
