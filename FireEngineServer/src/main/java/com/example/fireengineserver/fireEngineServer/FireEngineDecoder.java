@@ -15,6 +15,8 @@ import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.example.fireengineserver.fireEngineServer.FireEngineEncoder.responseToClient;
+
 
 public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacket> {
     @Override
@@ -28,6 +30,10 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
         RequestMsg requestMsg;
         try {
             hexStr = new ObjectMapper().readerFor(String.class).readValue(bytes); //decode
+            if (!verifyCRC(hexStr)) { // 若校验失败
+                responseToClient("否定回复：CRC校验失败".getBytes(), msg.sender().getHostString());
+                return;
+            }
 
             // 将表示二进制的字符串转为原始二进制数字
             BigInteger dataCarriedByInt = new BigInteger(hexStr, 16);
@@ -129,5 +135,16 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
         decoderResolveResult.put("CLIENT_PORT", String.valueOf(msg.sender().getPort()));
         decoderResolveResult.put("DATA", hexStr);
         ctx.write(decoderResolveResult);
+    }
+
+    private boolean verifyCRC(String datacrc) {
+        String hexstr = datacrc.substring(0, datacrc.length() - 2);
+        String mult = "101";//多项式
+        BigInteger datadec = new BigInteger(hexstr, 16);//CRC16转10
+        BigInteger multdec = new BigInteger(mult, 16);//多项式16转10
+        BigInteger remainder = datadec.remainder(multdec);
+        int multint = remainder.intValue();
+        String multhex = Integer.toHexString(multint);
+        return multhex.equals("0");
     }
 }

@@ -76,7 +76,7 @@ public class FireEngine {
 
         // Printing the received data
         String receivedData = new String(receivingPacket.getData()).trim();
-        updateStatus("收到服务器响应信息: " + receivedData);
+        updateStatus("收到服务器响应信息: 【" + receivedData + "】");
 
         clientSocket.close();
     }
