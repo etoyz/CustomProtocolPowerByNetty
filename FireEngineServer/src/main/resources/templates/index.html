@@ -26,8 +26,8 @@
             <canvas id="lineChart"></canvas>
         </div>
         <div style="margin-top: 25px">
-            <table id="dashboard" class="table table-striped table-bordered" style="width:100%">
-                <thead>
+            <table id="dashboard" class="table table-bordered" style="width:100%">
+                <thead class="table-active">
                 <tr>
                     <th>消防主机IP</th>
                     <th>原始请求报文</th>
@@ -164,6 +164,14 @@
                             }
                         },
                     },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '系统信息',
+                            // color: 'blue',
+                            padding: 0
+                        }
+                    }
                 }
             });
 
