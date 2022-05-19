@@ -32,6 +32,7 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
             hexStr = new ObjectMapper().readerFor(String.class).readValue(bytes); //decode
             if (!verifyCRC(hexStr)) { // 若校验失败
                 responseToClient("否定回复：CRC校验失败".getBytes(), msg.sender().getHostString());
+                LogUtils.warning("否定回复：CRC校验失败");
                 return;
             }
 
@@ -73,40 +74,48 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
             FireEngineServer.receivedData.add(requestMsg);
         } catch (MismatchedInputException e) {  //如果不是系统消息，则偷懒（￣︶￣）↗　
             Map<String, String> fakeData = new ObjectMapper().readerFor(Map.class).readValue(bytes); //decode
+            if (!"on".equals(fakeData.get("isValid"))) {
+                responseToClient("否定回复：CRC校验失败".getBytes(), msg.sender().getHostString());
+                LogUtils.warning("否定回复：CRC校验失败");
+                return;
+            }
             String convertedMsg = null;
             String functionCode = fakeData.get("functionCode");
-            switch (functionCode) {
-                case "70":
-                    String protectzone = fakeData.get("protectZone");
-                    String devicetype = fakeData.get("deviceType");
-                    String devicecode = fakeData.get("deviceCode");
-                    String faultcode = fakeData.get("faultCode");
-                    convertedMsg = "故障信息：防护区" + protectzone + "设备类型" + devicetype + "设备编号" + devicecode + "故障码" + faultcode;
-                    break;
-                case "80":
-                    convertedMsg = "分区信息:";
-                    break;
-                case "90": {
-                    String alarmcount = fakeData.get("protectZone1");
-                    String equipmtype = fakeData.get("equipmType");
-                    String identity = fakeData.get("Identity");
-                    String alarmlevel = fakeData.get("alarmLevel");
-                    String temperature = fakeData.get("Temperature");
-                    String co = fakeData.get("CO");
-                    String voc = fakeData.get("VOC");
-                    String smog = fakeData.get("Smog");
-                    convertedMsg = "探测器信息:防护区" + alarmcount + "  " + "设备类型" + equipmtype + "  " + "ID" + identity + "  " + "报警等级" + alarmlevel + "  " + "温度" + temperature + "  " + "CO" + co + "  " + "VOC" + voc + "  " + "烟雾" + smog;
-                    break;
+            if ("on".equals(fakeData.get("isReadSuccess")))
+                switch (functionCode) {
+                    case "70":
+                        String protectzone = fakeData.get("protectZone");
+                        String devicetype = fakeData.get("deviceType");
+                        String devicecode = fakeData.get("deviceCode");
+                        String faultcode = fakeData.get("faultCode");
+                        convertedMsg = "故障信息：防护区" + protectzone + "设备类型" + devicetype + "设备编号" + devicecode + "故障码" + faultcode;
+                        break;
+                    case "80":
+                        convertedMsg = "分区信息:";
+                        break;
+                    case "90": {
+                        String alarmcount = fakeData.get("protectZone1");
+                        String equipmtype = fakeData.get("equipmType");
+                        String identity = fakeData.get("Identity");
+                        String alarmlevel = fakeData.get("alarmLevel");
+                        String temperature = fakeData.get("Temperature");
+                        String co = fakeData.get("CO");
+                        String voc = fakeData.get("VOC");
+                        String smog = fakeData.get("Smog");
+                        convertedMsg = "探测器信息:防护区" + alarmcount + "  " + "设备类型" + equipmtype + "  " + "ID" + identity + "  " + "报警等级" + alarmlevel + "  " + "温度" + temperature + "  " + "CO" + co + "  " + "VOC" + voc + "  " + "烟雾" + smog;
+                        break;
+                    }
+                    case "A0": {
+                        String alarmcount = fakeData.get("protectZone2");
+                        String number = fakeData.get("Number");
+                        String status = fakeData.get("Status");
+                        convertedMsg = "灭火器信息:防护区" + alarmcount + "  " + "编号" + number + "  " + "状态" + status;
+                        break;
+                    }
                 }
-                case "A0": {
-                    String alarmcount = fakeData.get("protectZone2");
-                    String number = fakeData.get("Number");
-                    String status = fakeData.get("Status");
-                    convertedMsg = "灭火器信息:防护区" + alarmcount + "  " + "编号" + number + "  " + "状态" + status;
-                    break;
-                }
-            }
-            hexStr = "00000000000"; // TODO
+            else
+                convertedMsg = "读取失败！";
+            hexStr = "514E00114f" + functionCode + "000103000000000000e445H"; // fake
             requestMsg = new RequestMsg();
             requestMsg.setIp(msg.sender().getHostString() + ":" + msg.sender().getPort());
             requestMsg.setRawMsg(hexStr);
