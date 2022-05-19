@@ -39,12 +39,17 @@ public class WebServices {
         stringBuilder.append("<h1>服务器全部运行日志</h1>");
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
-            if (line.endsWith("info") || line.endsWith("warning"))
+            if (line.endsWith("info"))
                 stringBuilder
-                        .append("<hr style='height:1px;background-color:red'><strong>")
+                        .append("<hr style='height:2px;background-color:gray'><strong>")
                         .append(line)
                         .append("</strong>");
-            else
+            else if (line.endsWith("warning")) {
+                stringBuilder
+                        .append("<hr style='height:2px;background-color:gray'><strong style='color:red'>")
+                        .append(line)
+                        .append("</strong>");
+            } else
                 stringBuilder.append("<div>").append(line).append("</div>");
         }
         scanner.close();
