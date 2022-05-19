@@ -70,13 +70,28 @@ public class FireEngineDecoder extends SimpleChannelInboundHandler<DatagramPacke
             String convertedMsg = null;
             String functionCode = fakeData.get("functionCode");
             if (functionCode.equals("70")) {
-                convertedMsg = "暂不支持";
+                String protectzone = fakeData.get("protectZone");
+                String devicetype = fakeData.get("deviceType");
+                String devicecode = fakeData.get("deviceCode");
+                String faultcode = fakeData.get("faultCode");
+                convertedMsg = "故障信息：防护区" + protectzone + "设备类型" + devicetype + "设备编号" + devicecode + "故障码" + faultcode;
             } else if (functionCode.equals("80")) {
                 convertedMsg = "分区信息:";
             } else if (functionCode.equals("90")) {
-                convertedMsg = "探测器信息:";
+                String alarmcount = fakeData.get("protectZone1");
+                String equipmtype = fakeData.get("equipmType");
+                String identity = fakeData.get("Identity");
+                String alarmlevel = fakeData.get("alarmLevel");
+                String temperature = fakeData.get("Temperature");
+                String co = fakeData.get("CO");
+                String voc = fakeData.get("VOC");
+                String smog = fakeData.get("Smog");
+                convertedMsg = "探测器信息:防护区" + alarmcount + "  " + "设备类型" + equipmtype + "  " + "ID" + identity + "  " + "报警等级" + alarmlevel + "  " + "温度" + temperature + "  " + "CO" + co + "  " + "VOC" + voc + "  " + "烟雾" + smog;
             } else if (functionCode.equals("A0")) {
-                convertedMsg = "灭火器信息:";
+                String alarmcount = fakeData.get("protectZone2");
+                String number = fakeData.get("Number");
+                String status = fakeData.get("Status");
+                convertedMsg = "灭火器信息:防护区" + alarmcount + "  " + "编号" + number + "  " + "状态" + status;
             }
             hexStr = "00000000000"; // TODO
             requestMsg = new RequestMsg();
